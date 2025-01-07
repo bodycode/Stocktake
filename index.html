@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Excel to Data Grid Widget</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+        
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -15,6 +17,12 @@
             flex-direction: column;
             min-height: 100vh;
             background-color: #f9f9f9;
+        }
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: #4CAF50;
+            margin-top: 20px;
+            font-size: 48px;
         }
         h2 {
             color: #333;
@@ -72,6 +80,7 @@
     </style>
 </head>
 <body>
+    <h1>Stocktake Buddy</h1>
     <h2>Upload Excel File</h2>
     <input type="file" id="fileInput" accept=".xlsx, .xls">
     <video id="video"></video>
