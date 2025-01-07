@@ -66,6 +66,9 @@
             width: 90%;
             max-width: 400px;
         }
+        .hidden-column {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -111,9 +114,12 @@
             dataBody.innerHTML = '';
 
             // Create header row
-            data[0].forEach(header => {
+            data[0].forEach((header, index) => {
                 const th = document.createElement('th');
                 th.textContent = header;
+                if (header === 'Barcode') {
+                    th.classList.add('hidden-column');
+                }
                 headerRow.appendChild(th);
             });
             const th = document.createElement('th');
@@ -123,9 +129,12 @@
             // Create data rows
             data.slice(1).forEach(row => {
                 const tr = document.createElement('tr');
-                row.forEach(cell => {
+                row.forEach((cell, index) => {
                     const td = document.createElement('td');
                     td.textContent = cell;
+                    if (data[0][index] === 'Barcode') {
+                        td.classList.add('hidden-column');
+                    }
                     tr.appendChild(td);
                 });
                 const inputTd = document.createElement('td');
@@ -169,23 +178,4 @@
             Array.from(rows).forEach(row => {
                 const cells = row.getElementsByTagName('td');
                 if (cells[0].textContent.toLowerCase() !== 'totals:') {
-                    const barcodeCell = parseInt(cells[1].textContent, 10); // Assuming 'Barcode' is the second column
-                    const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
-                    csvData.push([barcodeCell, actualCell].join(','));
-                }
-            });
-
-            const csvContent = csvData.join('\n');
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const downloadLink = document.getElementById('downloadLink');
-            downloadLink.setAttribute('href', url);
-            downloadLink.setAttribute('download', 'export.csv');
-            downloadLink.style.display = 'block';
-            downloadLink.click();
-            downloadLink.style.display = 'none';
-            URL.revokeObjectURL(url);
-        }
-    </script>
-</body>
-</html>
+                    const barcodeCell = parseInt(cells
