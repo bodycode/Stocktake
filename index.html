@@ -59,15 +59,15 @@
         tr:hover {
             background-color: #ddd;
         }
+        .hidden {
+            display: none;
+        }
         video {
             display: block;
             margin: 10px 0;
             border: 1px solid #ddd;
             width: 90%;
             max-width: 400px;
-        }
-        .hidden-column {
-            display: none;
         }
     </style>
 </head>
@@ -113,12 +113,15 @@
             headerRow.innerHTML = '';
             dataBody.innerHTML = '';
 
+            let barcodeIndex = -1;
+
             // Create header row
             data[0].forEach((header, index) => {
                 const th = document.createElement('th');
                 th.textContent = header;
-                if (header === 'Barcode') {
-                    th.classList.add('hidden-column');
+                if (header.toLowerCase() === 'barcode') {
+                    th.classList.add('hidden');
+                    barcodeIndex = index;
                 }
                 headerRow.appendChild(th);
             });
@@ -132,8 +135,8 @@
                 row.forEach((cell, index) => {
                     const td = document.createElement('td');
                     td.textContent = cell;
-                    if (data[0][index] === 'Barcode') {
-                        td.classList.add('hidden-column');
+                    if (index === barcodeIndex) {
+                        td.classList.add('hidden');
                     }
                     tr.appendChild(td);
                 });
@@ -178,4 +181,23 @@
             Array.from(rows).forEach(row => {
                 const cells = row.getElementsByTagName('td');
                 if (cells[0].textContent.toLowerCase() !== 'totals:') {
-                    const barcodeCell = parseInt(cells
+                    const barcodeCell = parseInt(cells[1].textContent, 10); // Assuming 'Barcode' is the second column
+                    const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
+                    csvData.push([barcodeCell, actualCell].join(','));
+                }
+            });
+
+            const csvContent = csvData.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const downloadLink = document.getElementById('downloadLink');
+            downloadLink.setAttribute('href', url);
+            downloadLink.setAttribute('download', 'export.csv');
+            downloadLink.style.display = 'block';
+            downloadLink.click();
+            downloadLink.style.display = 'none';
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
