@@ -180,11 +180,9 @@
 
             Array.from(rows).forEach(row => {
                 const cells = row.getElementsByTagName('td');
-                if (cells[0].textContent.toLowerCase() !== 'totals:') {
-                    const barcodeCell = parseInt(cells[1].textContent, 10); // Assuming 'Barcode' is the second column
-                    const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
-                    csvData.push([barcodeCell, actualCell].join(','));
-                }
+                const barcodeCell = cells[barcodeIndex] ? cells[barcodeIndex].textContent : ''; // Handle missing 'Barcode' column gracefully
+                const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
+                csvData.push([barcodeCell, actualCell].join(','));
             });
 
             const csvContent = csvData.join('\n');
