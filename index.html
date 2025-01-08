@@ -117,6 +117,7 @@
         <tbody id="dataBody"></tbody>
     </table>
     <button id="downloadButton" class="button" onclick="downloadCSV()">Export/Download Count to Phone</button>
+    <button id="sendEmailButton" class="button" onclick="sendEmail()">Send Count</button>
     <a id="downloadLink" style="display:none;"></a>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
@@ -241,16 +242,7 @@
             URL.revokeObjectURL(url);
         }
 
-        function saveTableData(data) {
-            localStorage.setItem('tableData', JSON.stringify(data));
-        }
-
-        function loadTableData() {
-            const tableData = JSON.parse(localStorage.getItem('tableData'));
-            if (tableData) {
-                populateTable(tableData);
-            }
-        }
-    </script>
-</body>
-</html>
+        function sendEmail() {
+            const email = prompt("Enter the email address:");
+            if (email) {
+                const rows
