@@ -245,3 +245,8 @@
 
         function saveTableData(data) {
             localStorage.setItem('tableData', JSON.stringify(data));
+        }
+
+        function loadTableData() {
+            const tableData = JSON.parse(localStorage.getItem('tableData'));
+            if
