@@ -1,4 +1,6 @@
-Let's try a different approach to ensure the table loads correctly. I'll simplify the code and add more detailed debugging statements to help us pinpoint the issue. Here's the updated code:
+I'm sorry to hear that it's still not working. Let's try a more simplified approach to ensure we can pinpoint the issue. I'll provide a minimal example that focuses solely on reading the CSV file and displaying it in a table. Once we confirm this works, we can add the additional functionality.
+
+Here's the simplified code:
 
 ```html
 <!DOCTYPE html>
@@ -8,10 +10,8 @@ Let's try a different approach to ensure the table loads correctly. I'll simplif
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stocktake Buddy</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
-        
         body {
-            font-family: 'Libre Baskerville', serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
@@ -19,56 +19,21 @@ Let's try a different approach to ensure the table loads correctly. I'll simplif
             align-items: center;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #1c1c1c; /* Very dark charcoal */
+            background-color: #1c1c1c;
         }
         h1 {
-            font-family: 'Montserrat', sans-serif;
             color: white;
-            background-color: black;
             text-align: center;
-            text-transform: uppercase;
-            font-weight: 500;
             margin-top: 20px;
-            font-size: 48px;
-            padding: 10px;
-            letter-spacing: 0.1em; /* Slightly wider spacing between letters */
-            font-stretch: 80%; /* 20% more narrow */
         }
         .button {
-            display: inline-block;
-            margin: 20px auto;
+            margin: 20px;
             padding: 10px 20px;
             font-size: 16px;
             color: white;
-            border: 2px solid #a89a68;
-            background-color: transparent;
+            background-color: #a89a68;
+            border: none;
             cursor: pointer;
-            text-align: center;
-            text-transform: uppercase;
-        }
-        .button::after {
-            content: ' →';
-            color: #a89a68;
-        }
-        .upload-btn-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-        .upload-btn-wrapper input[type="file"] {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-        input[type="text"], input[type="number"] {
-            width: 80%; /* 80% width of the screen */
-            max-width: 800px;
-            margin: 20px 0;
-            padding: 10px;
-            font-size: 16px;
-            box-sizing: border-box;
         }
         table {
             width: 90%;
@@ -83,53 +48,29 @@ Let's try a different approach to ensure the table loads correctly. I'll simplif
             text-align: left;
         }
         th {
-            background-color: #a89a68; /* Table header color */
-            color: #1c1c1c; /* Very dark charcoal */
+            background-color: #a89a68;
+            color: #1c1c1c;
         }
         tr:nth-child(even) {
-            background-color: #f2f2f2; /* Slightly lighter background for even rows */
+            background-color: #f2f2f2;
         }
         tr:hover {
-            background-color: #ddd; /* Hover effect */
-        }
-        .hidden {
-            display: none;
-        }
-        video {
-            display: block;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            width: 90%;
-            max-width: 400px;
+            background-color: #ddd;
         }
     </style>
 </head>
 <body>
     <h1>Stocktake Buddy</h1>
-    <div class="upload-btn-wrapper">
-        <button class="button" onclick="document.getElementById('fileInput').click()">Upload CSV file</button>
-        <input type="file" id="fileInput" accept=".xlsx, .xls" onchange="handleFile(event)">
-    </div>
-    <video id="video"></video>
-    <button id="scanButton" class="button" onclick="scanBarcode()">Scan Barcode</button>
-    <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()">
+    <input type="file" id="fileInput" accept=".xlsx, .xls" onchange="handleFile(event)">
     <table id="dataGrid">
         <thead>
             <tr id="headerRow"></tr>
         </thead>
         <tbody id="dataBody"></tbody>
     </table>
-    <button id="downloadButton" class="button" onclick="downloadCSV()">Export/Download Count to Phone</button>
-    <button id="emailButton" class="button" onclick="promptEmail()">Email Count</button>
-    <a id="downloadLink" style="display:none;"></a>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-    <script src="https://unpkg.com/@zxing/library@latest"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            loadTableData();
-        });
-
         function handleFile(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
@@ -140,7 +81,6 @@ Let's try a different approach to ensure the table loads correctly. I'll simplif
                 const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
                 console.log('JSON Data:', jsonData); // Debugging line
                 populateTable(jsonData);
-                saveTableData(jsonData);
             };
             reader.readAsArrayBuffer(file);
         }
@@ -156,97 +96,28 @@ Let's try a different approach to ensure the table loads correctly. I'll simplif
                 return;
             }
 
-            let barcodeIndex = -1;
-
             // Create header row
-            data[0].forEach((header, index) => {
+            data[0].forEach(header => {
                 const th = document.createElement('th');
                 th.textContent = header;
-                if (header.toLowerCase() === 'barcode') {
-                    th.classList.add('hidden');
-                    barcodeIndex = index;
-                }
                 headerRow.appendChild(th);
             });
-            const th = document.createElement('th');
-            th.textContent = 'Actual';
-            headerRow.appendChild(th);
 
             // Create data rows
-            data.slice(1).forEach((row, rowIndex) => {
+            data.slice(1).forEach(row => {
                 const tr = document.createElement('tr');
-                row.forEach((cell, index) => {
+                row.forEach(cell => {
                     const td = document.createElement('td');
                     td.textContent = cell;
-                    if (index === barcodeIndex) {
-                        td.classList.add('hidden');
-                    }
                     tr.appendChild(td);
                 });
-                const inputTd = document.createElement('td');
-                const input = document.createElement('input');
-                input.type = 'number';
-                inputTd.appendChild(input);
-                tr.appendChild(inputTd);
                 dataBody.appendChild(tr);
-
-                // Load saved input value if available
-                const savedInputValue = localStorage.getItem(`inputValue_${rowIndex}`);
-                if (savedInputValue) {
-                    input.value = savedInputValue;
-                }
-
-                // Save input value on change
-                input.addEventListener('input', () => {
-                    localStorage.setItem(`inputValue_${rowIndex}`, input.value);
-                });
             });
             console.log('Table populated'); // Debugging line
         }
+    </script>
+</body>
+</html>
+```
 
-        function searchTable() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toLowerCase();
-            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
-            Array.from(rows).forEach(row => {
-                const cells = row.getElementsByTagName('td');
-                let match = false;
-                Array.from(cells).forEach(cell => {
-                    if (cell.textContent.toLowerCase().indexOf(filter) > -1) {
-                        match = true;
-                    }
-                });
-                row.style.display = match ? '' : 'none';
-            });
-        }
-
-        function scanBarcode() {
-            document.getElementById('searchInput').value = '';
-            const codeReader = new ZXing.BrowserBarcodeReader();
-            codeReader.decodeOnceFromVideoDevice(undefined, 'video').then(result => {
-                document.getElementById('searchInput').value = result.text;
-                searchTable();
-            }).catch(err => console.error(err));
-        }
-
-        function downloadCSV() {
-            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
-            const csvData = [];
-
-            Array.from(rows).forEach(row => {
-                const cells = row.getElementsByTagName('td');
-                const barcodeCell = cells[1] ? cells[1].textContent : ''; // Assuming 'Barcode' is the second column
-                const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
-                csvData.push([barcodeCell, actualCell].join(','));
-            });
-
-            const csvContent = csvData.join('\n');
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const downloadLink = document.getElementById('downloadLink');
-            downloadLink.setAttribute('href', url);
-            downloadLink.setAttribute('download', 'export.csv');
-            downloadLink.style.display = 'block';
-            downloadLink.click();
-            downloadLink.style.display = 'none';
-            URL.re
+Please try this simplified version and let me know if the table populates correctly when you upload a CSV file. If it works, we can then proceed to add the additional functionality. If it still doesn't work, please check the browser console for any errors and share them with me.
