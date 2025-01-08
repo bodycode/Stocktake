@@ -47,12 +47,17 @@
             content: ' →';
             color: #a89a68;
         }
-        input[type="file"] {
+        .upload-btn-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .upload-btn-wrapper input[type="file"] {
             font-size: 100px;
             position: absolute;
             left: 0;
             top: 0;
             opacity: 0;
+            cursor: pointer;
         }
         table {
             width: 90%;
@@ -91,8 +96,8 @@
 <body>
     <h1>Stocktake Buddy</h1>
     <div class="upload-btn-wrapper">
-        <button class="button">Upload CSV file</button>
-        <input type="file" id="fileInput" accept=".xlsx, .xls">
+        <button class="button" onclick="document.getElementById('fileInput').click()">Upload CSV file</button>
+        <input type="file" id="fileInput" accept=".xlsx, .xls" onchange="handleFile(event)">
     </div>
     <video id="video"></video>
     <button id="scanButton" class="button">Scan Barcode</button>
@@ -109,11 +114,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script src="https://unpkg.com/@zxing/library@latest"></script>
     <script>
-        document.getElementById('fileInput').addEventListener('change', handleFile, false);
-        document.getElementById('searchInput').addEventListener('keyup', searchTable, false);
-        document.getElementById('scanButton').addEventListener('click', scanBarcode, false);
-        document.getElementById('downloadButton').addEventListener('click', downloadCSV, false);
-
         function handleFile(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
