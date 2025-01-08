@@ -1,6 +1,4 @@
-Got it! Let's start from the beginning with the provided code. I'll add a button labeled 'Email Count' that prompts for an email address and attaches the data table as a CSV file showing only the 'Barcode' and 'Actual' columns, without the column headers. The device's default mail app will be used to send the email.
-
-Here's the updated code:
+Let's troubleshoot this issue step by step. I'll add some debugging statements to help us understand where the problem might be. Here's the updated code with additional `console.log` statements:
 
 ```html
 <!DOCTYPE html>
@@ -245,3 +243,9 @@ Here's the updated code:
             downloadLink.setAttribute('download', 'export.csv');
             downloadLink.style.display = 'block';
             downloadLink.click();
+            downloadLink.style.display = 'none';
+            URL.revokeObjectURL(url);
+        }
+
+        function promptEmail() {
+            const email = prompt('Please enter your email address:');
