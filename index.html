@@ -108,15 +108,15 @@
         <input type="file" id="fileInput" accept=".xlsx, .xls" onchange="handleFile(event)">
     </div>
     <video id="video"></video>
-    <button id="scanButton" class="button">Scan Barcode</button>
-    <input type="text" id="searchInput" placeholder="Search...">
+    <button id="scanButton" class="button" onclick="scanBarcode()">Scan Barcode</button>
+    <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()">
     <table id="dataGrid">
         <thead>
             <tr id="headerRow"></tr>
         </thead>
         <tbody id="dataBody"></tbody>
     </table>
-    <button id="downloadButton" class="button">Export/Download Count to Phone</button>
+    <button id="downloadButton" class="button" onclick="downloadCSV()">Export/Download Count to Phone</button>
     <a id="downloadLink" style="display:none;"></a>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
@@ -208,7 +208,7 @@
 
             Array.from(rows).forEach(row => {
                 const cells = row.getElementsByTagName('td');
-                const barcodeCell = cells[barcodeIndex] ? cells[barcodeIndex].textContent : ''; // Handle missing 'Barcode' column gracefully
+                const barcodeCell = cells[1] ? cells[1].textContent : ''; // Assuming 'Barcode' is the second column
                 const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
                 csvData.push([barcodeCell, actualCell].join(','));
             });
