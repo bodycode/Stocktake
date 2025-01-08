@@ -133,7 +133,12 @@
                 const data = new Uint8Array(event.target.result);
                 const workbook = XLSX.read(data, {type: 'array'});
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+                let jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+                
+                // Remove rows that contain 'Totals:' in any column
+                jsonData = jsonData.filter(row => !row.some(cell => typeof cell === 'string' && cell.includes('Totals:')));
+                
+                console.log('Filtered JSON Data:', jsonData); // Debugging line
                 populateTable(jsonData);
                 saveTableData(jsonData);
             };
@@ -226,9 +231,7 @@
                 const cells = row.getElementsByTagName('td');
                 const barcodeCell = cells[1] ? cells[1].textContent : ''; // Assuming 'Barcode' is the second column
                 const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
-                if (barcodeCell.toLowerCase() !== 'totals:') {
-                    csvData.push([barcodeCell, actualCell].join(','));
-                }
+                csvData.push([barcodeCell, actualCell].join(','));
             });
 
             const csvContent = csvData.join('\n');
@@ -248,9 +251,3 @@
         }
 
         function loadTableData() {
-            const tableData = JSON.parse(localStorage.getItem('tableData'));
-            if (tableData) {
-                populateTable(tableData);
-            }
-        }
-    </
