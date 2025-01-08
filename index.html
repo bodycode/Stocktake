@@ -28,19 +28,39 @@
             margin-top: 20px;
             font-size: 48px;
             padding: 10px;
+            letter-spacing: 0.1em; /* Slightly wider spacing between letters */
+            font-stretch: semi-condensed; /* More condensed font */
         }
         h2 {
             color: #FFF5E1; /* Light cream */
             margin-top: 20px;
         }
-        input[type="file"], input[type="text"], button {
-            display: block;
-            margin: 10px 0;
-            padding: 10px;
+        .upload-btn-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .upload-btn {
+            display: inline-block;
+            margin: 20px auto;
+            padding: 10px 20px;
             font-size: 16px;
-            width: 90%;
-            max-width: 400px;
-            box-sizing: border-box;
+            color: white;
+            border: 2px solid #a89a68;
+            background-color: transparent;
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        .upload-btn::after {
+            content: ' →';
+            color: #a89a68;
+        }
+        .upload-btn-wrapper input[type="file"] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
         }
         button {
             background-color: #EAE0C8; /* Cream */
@@ -87,8 +107,11 @@
 </head>
 <body>
     <h1>Stocktake Buddy</h1>
-    <h2>Upload Excel File</h2>
-    <input type="file" id="fileInput" accept=".xlsx, .xls">
+    <div class="upload-btn-wrapper">
+        <button class="upload-btn">Upload CSV file</button>
+        <input type="file" id="fileInput" accept=".xlsx, .xls">
+    </div>
+    <h2>Scan Barcode</h2>
     <video id="video"></video>
     <button id="scanButton">Scan Barcode</button>
     <input type="text" id="searchInput" placeholder="Search...">
