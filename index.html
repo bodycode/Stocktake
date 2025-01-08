@@ -223,9 +223,12 @@
 
         Array.from(rows).forEach(row => {
             const cells = row.getElementsByTagName('td');
-            const barcodeCell = cells[0] ? cells[0].textContent : ''; // Assuming 'Barcode' is the first column
-            const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
-            csvData.push([barcodeCell, actualCell].join(','));
+            const firstCell = cells[0] ? cells[0].textContent : '';
+            if (firstCell.toLowerCase() !== 'totals:') {
+                const barcodeCell = cells[1] ? cells[1].textContent : ''; // 'Barcode' is the second column
+                const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
+                csvData.push([barcodeCell, actualCell].join(','));
+            }
         });
 
         const csvContent = csvData.join('\n');
