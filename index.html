@@ -1,4 +1,6 @@
-Sure! Here's the complete script with the added debugging `console.log` statements to help troubleshoot the issue with the data grid not showing:
+Got it! Let's start from the beginning with the provided code. I'll add a button labeled 'Email Count' that prompts for an email address and attaches the data table as a CSV file showing only the 'Barcode' and 'Actual' columns, without the column headers. The device's default mail app will be used to send the email.
+
+Here's the updated code:
 
 ```html
 <!DOCTYPE html>
@@ -243,11 +245,3 @@ Sure! Here's the complete script with the added debugging `console.log` statemen
             downloadLink.setAttribute('download', 'export.csv');
             downloadLink.style.display = 'block';
             downloadLink.click();
-            downloadLink.style.display = 'none';
-            URL.revokeObjectURL(url);
-        }
-
-        function promptEmail() {
-            const email = prompt('Please enter your email address:');
-            if (email) {
-                const
