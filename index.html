@@ -226,7 +226,9 @@
                 const cells = row.getElementsByTagName('td');
                 const barcodeCell = cells[1] ? cells[1].textContent : ''; // Assuming 'Barcode' is the second column
                 const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
-                csvData.push([barcodeCell, actualCell].join(','));
+                if (barcodeCell.toLowerCase() !== 'totals:') {
+                    csvData.push([barcodeCell, actualCell].join(','));
+                }
             });
 
             const csvContent = csvData.join('\n');
@@ -251,6 +253,4 @@
                 populateTable(tableData);
             }
         }
-    </script>
-</body>
-</html>
+    </
