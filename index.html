@@ -31,15 +31,7 @@
             letter-spacing: 0.1em; /* Slightly wider spacing between letters */
             font-stretch: semi-condensed; /* More condensed font */
         }
-        h2 {
-            color: #FFF5E1; /* Light cream */
-            margin-top: 20px;
-        }
-        .upload-btn-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-        .upload-btn {
+        .button {
             display: inline-block;
             margin: 20px auto;
             padding: 10px 20px;
@@ -51,25 +43,16 @@
             text-align: center;
             text-transform: uppercase;
         }
-        .upload-btn::after {
+        .button::after {
             content: ' →';
             color: #a89a68;
         }
-        .upload-btn-wrapper input[type="file"] {
+        input[type="file"] {
             font-size: 100px;
             position: absolute;
             left: 0;
             top: 0;
             opacity: 0;
-        }
-        button {
-            background-color: #EAE0C8; /* Cream */
-            color: #1c1c1c; /* Very dark charcoal */
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #C3B091; /* Darker cream */
         }
         table {
             width: 90%;
@@ -108,11 +91,11 @@
 <body>
     <h1>Stocktake Buddy</h1>
     <div class="upload-btn-wrapper">
-        <button class="upload-btn">Upload CSV file</button>
+        <button class="button">Upload CSV file</button>
         <input type="file" id="fileInput" accept=".xlsx, .xls">
     </div>
     <video id="video"></video>
-    <button id="scanButton">Scan Barcode</button>
+    <button id="scanButton" class="button">Scan Barcode</button>
     <input type="text" id="searchInput" placeholder="Search...">
     <table id="dataGrid">
         <thead>
@@ -120,7 +103,7 @@
         </thead>
         <tbody id="dataBody"></tbody>
     </table>
-    <button id="downloadButton">Export/Download Count to Phone</button>
+    <button id="downloadButton" class="button">Export/Download Count to Phone</button>
     <a id="downloadLink" style="display:none;"></a>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
