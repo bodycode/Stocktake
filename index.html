@@ -217,29 +217,28 @@
             }).catch(err => console.error(err));
         }
 
-        function downloadCSV() {
-            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
-            const csvData = [];
+    function downloadCSV() {
+        const rows = document.getElementById('dataBody').getElementsByTagName('tr');
+        const csvData = [];
 
-            Array.from(rows).forEach(row => {
-                const cells = row.getElementsByTagName('td');
-                const barcodeCell = cells[1] ? cells[1].textContent : ''; // Assuming 'Barcode' is the second column
-                const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
-                csvData.push([barcodeCell, actualCell].join(','));
-            });
+        Array.from(rows).forEach(row => {
+            const cells = row.getElementsByTagName('td');
+            const barcodeCell = cells[0] ? cells[0].textContent : ''; // Assuming 'Barcode' is the first column
+            const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
+            csvData.push([barcodeCell, actualCell].join(','));
+        });
 
-            const csvContent = csvData.join('\n');
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const downloadLink = document.getElementById('downloadLink');
-            downloadLink.setAttribute('href', url);
-            downloadLink.setAttribute('download', 'export.csv');
-            downloadLink.style.display = 'block';
-            downloadLink.click();
-            downloadLink.style.display = 'none';
-            URL.revokeObjectURL(url);
-        }
-
+        const csvContent = csvData.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/plain;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const downloadLink = document.getElementById('downloadLink');
+        downloadLink.setAttribute('href', url);
+        downloadLink.setAttribute('download', 'export.txt');
+        downloadLink.style.display = 'block';
+        downloadLink.click();
+        downloadLink.style.display = 'none';
+        URL.revokeObjectURL(url);
+    }
         function saveTableData(data) {
             localStorage.setItem('tableData', JSON.stringify(data));
         }
