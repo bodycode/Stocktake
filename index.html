@@ -59,7 +59,7 @@
             opacity: 0;
             cursor: pointer;
         }
-        input[type="text"] {
+        input[type="text"], input[type="number"] {
             width: 80%; /* 80% width of the screen */
             max-width: 800px;
             margin: 20px 0;
@@ -163,7 +163,7 @@
             headerRow.appendChild(th);
 
             // Create data rows
-            data.slice(1).forEach(row => {
+            data.slice(1).forEach((row, rowIndex) => {
                 const tr = document.createElement('tr');
                 row.forEach((cell, index) => {
                     const td = document.createElement('td');
@@ -175,10 +175,21 @@
                 });
                 const inputTd = document.createElement('td');
                 const input = document.createElement('input');
-                input.type = 'text';
+                input.type = 'number';
                 inputTd.appendChild(input);
                 tr.appendChild(inputTd);
                 dataBody.appendChild(tr);
+
+                // Load saved input value if available
+                const savedInputValue = localStorage.getItem(`inputValue_${rowIndex}`);
+                if (savedInputValue) {
+                    input.value = savedInputValue;
+                }
+
+                // Save input value on change
+                input.addEventListener('input', () => {
+                    localStorage.setItem(`inputValue_${rowIndex}`, input.value);
+                });
             });
         }
 
@@ -243,3 +254,4 @@
     </script>
 </body>
 </html>
+ [A](https://github.com/SUNYunZeng/ChordDependencyChart/tree/57d410f4c52d25f50b5b976b81ac12de9cf21f3f/README.md?copilot_analytics_metadata=eyJldmVudEluZm9fY2xpY2tTb3VyY2UiOiJjaXRhdGlvbkxpbmsiLCJldmVudEluZm9fY2xpY2tEZXN0aW5hdGlvbiI6Imh0dHBzOlwvXC9naXRodWIuY29tXC9TVU5ZdW5aZW5nXC9DaG9yZERlcGVuZGVuY3lDaGFydFwvdHJlZVwvNTdkNDEwZjRjNTJkMjVmNTBiNWI5NzZiODFhYzEyZGU5Y2YyMWYzZlwvUkVBRE1FLm1kIiwiZXZlbnRJbmZvX21lc3NhZ2VJZCI6Imk0MmVIZ2hrYjZidWt5R3BQSGpSMSIsImV2ZW50SW5mb19jb252ZXJzYXRpb25JZCI6InJUVnpUN2IyUFdhYUptVWF2S2FaNSJ9&citationMarker=9F742443-6C92-4C44-BF58-8F5A7C53B6F1) [B](https://github.com/buribalazs/smooth-drag-order/tree/7b40d21d076c3e31765f61481f537beaf4c5ec9f/README.md?copilot_analytics_metadata=eyJldmVudEluZm9fY2xpY2tTb3VyY2UiOiJjaXRhdGlvbkxpbmsiLCJldmVudEluZm9fY29udmVyc2F0aW9uSWQiOiJyVFZ6VDdiMlBXYWFKbVVhdkthWjUiLCJldmVudEluZm9fY2xpY2tEZXN0aW5hdGlvbiI6Imh0dHBzOlwvXC9naXRodWIuY29tXC9idXJpYmFsYXpzXC9zbW9vdGgtZHJhZy1vcmRlclwvdHJlZVwvN2I0MGQyMWQwNzZjM2UzMTc2NWY2MTQ4MWY1MzdiZWFmNGM1ZWM5ZlwvUkVBRE1FLm1kIiwiZXZlbnRJbmZvX21lc3NhZ2VJZCI6Imk0MmVIZ2hrYjZidWt5R3BQSGpSMSJ9&citationMarker=9F742443-6C92-4C44-BF58-8F5A7C53B6F1)
