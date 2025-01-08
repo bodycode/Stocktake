@@ -122,6 +122,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script src="https://unpkg.com/@zxing/library@latest"></script>
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            loadTableData();
+        });
+
         function handleFile(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
@@ -131,6 +135,7 @@
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                 const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
                 populateTable(jsonData);
+                saveTableData(jsonData);
             };
             reader.readAsArrayBuffer(file);
         }
@@ -223,6 +228,17 @@
             downloadLink.click();
             downloadLink.style.display = 'none';
             URL.revokeObjectURL(url);
+        }
+
+        function saveTableData(data) {
+            localStorage.setItem('tableData', JSON.stringify(data));
+        }
+
+        function loadTableData() {
+            const tableData = JSON.parse(localStorage.getItem('tableData'));
+            if (tableData) {
+                populateTable(tableData);
+            }
         }
     </script>
 </body>
