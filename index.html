@@ -1,6 +1,6 @@
-I'm sorry to hear that it's still not working. Let's try a more simplified approach to ensure we can pinpoint the issue. I'll provide a minimal example that focuses solely on reading the CSV file and displaying it in a table. Once we confirm this works, we can add the additional functionality.
+Great! Now that the table is showing, let's add the 'Email Count' button and the functionality to prompt for an email address and attach the data table as a CSV file showing only the 'Barcode' and 'Actual' columns, without the column headers. The device's default mail app will be used to send the email.
 
-Here's the simplified code:
+Here's the updated code:
 
 ```html
 <!DOCTYPE html>
@@ -68,6 +68,7 @@ Here's the simplified code:
         </thead>
         <tbody id="dataBody"></tbody>
     </table>
+    <button class="button" onclick="promptEmail()">Email Count</button>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script>
@@ -115,9 +116,29 @@ Here's the simplified code:
             });
             console.log('Table populated'); // Debugging line
         }
+
+        function promptEmail() {
+            const email = prompt('Please enter your email address:');
+            if (email) {
+                const csvContent = generateCSV();
+                const mailtoLink = `mailto:${email}?subject=Stocktake%20Data&body=Please%20find%20the%20attached%20CSV%20file.&attachment=${encodeURIComponent(csvContent)}`;
+                window.location.href = mailtoLink;
+            }
+        }
+
+        function generateCSV() {
+            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
+            const csvData = [];
+
+            Array.from(rows).forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                const barcodeCell = cells[0] ? cells[0].textContent : ''; // Assuming 'Barcode' is the first column
+                const actualCell = cells[cells.length - 1].textContent;
+                csvData.push([barcodeCell, actualCell].join(','));
+            });
+
+            return csvData.join('\n');
+        }
     </script>
 </body>
 </html>
-```
-
-Please try this simplified version and let me know if the table populates correctly when you upload a CSV file. If it works, we can then proceed to add the additional functionality. If it still doesn't work, please check the browser console for any errors and share them with me.
