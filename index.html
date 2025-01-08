@@ -1,4 +1,4 @@
-Let's troubleshoot this issue step by step. I'll add some debugging statements to help us understand where the problem might be. Here's the updated code with additional `console.log` statements:
+Let's try a different approach to ensure the table loads correctly. I'll simplify the code and add more detailed debugging statements to help us pinpoint the issue. Here's the updated code:
 
 ```html
 <!DOCTYPE html>
@@ -151,6 +151,11 @@ Let's troubleshoot this issue step by step. I'll add some debugging statements t
             headerRow.innerHTML = '';
             dataBody.innerHTML = '';
 
+            if (data.length === 0) {
+                console.error('No data found in the uploaded file.');
+                return;
+            }
+
             let barcodeIndex = -1;
 
             // Create header row
@@ -244,8 +249,4 @@ Let's troubleshoot this issue step by step. I'll add some debugging statements t
             downloadLink.style.display = 'block';
             downloadLink.click();
             downloadLink.style.display = 'none';
-            URL.revokeObjectURL(url);
-        }
-
-        function promptEmail() {
-            const email = prompt('Please enter your email address:');
+            URL.re
