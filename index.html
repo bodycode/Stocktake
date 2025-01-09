@@ -112,7 +112,6 @@
         <button class="button" onclick="document.getElementById('fileInput').click()">Upload CSV file</button>
         <input type="file" id="fileInput" accept=".xlsx, .xls" onchange="handleFile(event)">
     </div>
-    <button class="button" onclick="clearAllData()">CLEAR ALL DATA</button>
     <div class="video-wrapper">
         <video id="video"></video>
     </div>
@@ -126,6 +125,7 @@
     </table>
     <button id="downloadButton" class="button" onclick="downloadCSV()">Download Count</button>
     <a id="downloadLink" style="display:none;"></a>
+    <button class="button" onclick="clearAllData()">CLEAR ALL DATA</button>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script src="https://unpkg.com/@zxing/library@latest"></script>
