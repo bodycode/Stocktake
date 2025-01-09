@@ -108,7 +108,7 @@
         <input type="file" id="fileInput" accept=".xlsx, .xls" onchange="handleFile(event)">
     </div>
     <video id="video"></video>
-    <button id="scanButton" class="button" onclick="scanBarcode()">Scan Barcode</button>
+    <button id="ScanButton" class="button" onclick="ScanBarcode()">Scan Barcode</button>
     <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()">
     <table id="dataGrid">
         <thead>
@@ -146,15 +146,15 @@
             headerRow.innerHTML = '';
             dataBody.innerHTML = '';
 
-            let barcodeIndex = -1;
+            let BarcodeIndex = -1;
 
             // Create header row
             data[0].forEach((header, index) => {
                 const th = document.createElement('th');
                 th.textContent = header;
-                if (header.toLowerCase() === 'barcode') {
+                if (header.toLowerCase() === 'Barcode') {
                     th.classList.add('hidden');
-                    barcodeIndex = index;
+                    BarcodeIndex = index;
                 }
                 headerRow.appendChild(th);
             });
@@ -168,7 +168,7 @@
                 row.forEach((cell, index) => {
                     const td = document.createElement('td');
                     td.textContent = cell;
-                    if (index === barcodeIndex) {
+                    if (index === BarcodeIndex) {
                         td.classList.add('hidden');
                     }
                     tr.appendChild(td);
@@ -189,11 +189,11 @@
                 // Save input value on change
                 input.addEventListener('input', () => {
                     localStorage.setItem(`inputValue_${rowIndex}`, input.value);
-                    const barcodeCell = tr.cells[barcodeIndex];
-                    if (!barcodeCell.textContent) {
-                        const barcode = prompt('Add a barcode to this product');
-                        if (barcode) {
-                            barcodeCell.textContent = barcode;
+                    const BarcodeCell = tr.cells[BarcodeIndex];
+                    if (!BarcodeCell.textContent) {
+                        const Barcode = prompt('Add a Barcode to this product');
+                        if (Barcode) {
+                            BarcodeCell.textContent = Barcode;
                             alert('Barcode has been added to this product');
                         }
                     }
@@ -217,7 +217,7 @@
             });
         }
 
-        function scanBarcode() {
+        function ScanBarcode() {
             document.getElementById('searchInput').value = '';
             const codeReader = new ZXing.BrowserBarcodeReader();
             codeReader.decodeOnceFromVideoDevice(undefined, 'video').then(result => {
@@ -234,9 +234,9 @@
                 const cells = row.getElementsByTagName('td');
                 const firstCell = cells[0] ? cells[0].textContent : '';
                 if (firstCell.toLowerCase() !== 'totals:') {
-                    const barcodeCell = cells[1] ? cells[1].textContent : ''; // 'Barcode' is the second column
+                    const BarcodeCell = cells[1] ? cells[1].textContent : ''; // 'Barcode' is the second column
                     const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
-                    csvData.push([barcodeCell, actualCell].join(','));
+                    csvData.push([BarcodeCell, actualCell].join(','));
                 }
             });
 
