@@ -1,6 +1,3 @@
-Oops! It looks like the closing tags were cut off. Here's the complete code with the closing tags included:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -179,6 +176,7 @@ Oops! It looks like the closing tags were cut off. Here's the complete code with
                 const inputTd = document.createElement('td');
                 const input = document.createElement('input');
                 input.type = 'number';
+                input.classList.add('Actual');
                 inputTd.appendChild(input);
                 tr.appendChild(inputTd);
                 dataBody.appendChild(tr);
@@ -250,35 +248,3 @@ Oops! It looks like the closing tags were cut off. Here's the complete code with
 
         function saveTableData(data) {
             localStorage.setItem('tableData', JSON.stringify(data));
-        }
-
-        function loadTableData() {
-            const tableData = JSON.parse(localStorage.getItem('tableData'));
-            if (tableData) {
-                populateTable(tableData);
-            }
-            
-    document.addEventListener('DOMContentLoaded', function() {
-    const table = document.querySelector('table');
-    
-    table.addEventListener('input', function(event) {
-        const target = event.target;
-        
-        if (target.classList.contains('Actual')) {
-            const row = target.closest('tr');
-            const barcodeCell = row.querySelector('.Barcode');
-            
-            if (target.value !== '' && barcodeCell.value === '') {
-                const Barcode = prompt('Please enter the Barcode:');
-                if (Barcode !== null) {
-                    BarcodeCell.value = Barcode;
-                }
-            }
-        }
-    });
-});
-        }
-    </script>
-</body>
-</html>
-
