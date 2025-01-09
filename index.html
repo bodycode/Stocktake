@@ -282,11 +282,14 @@
         }
 
         function clearAllData() {
-            localStorage.removeItem('tableData');
-            localStorage.clear();
-            document.getElementById('headerRow').innerHTML = '';
-            document.getElementById('dataBody').innerHTML = '';
-            alert('All data has been cleared.');
+            const confirmation = confirm('You are about to clear all data. Do you wish to continue?');
+            if (confirmation) {
+                localStorage.removeItem('tableData');
+                localStorage.clear();
+                document.getElementById('headerRow').innerHTML = '';
+                document.getElementById('dataBody').innerHTML = '';
+                alert('All data has been cleared.');
+            }
         }
     </script>
 </body>
