@@ -189,6 +189,14 @@
                 // Save input value on change
                 input.addEventListener('input', () => {
                     localStorage.setItem(`inputValue_${rowIndex}`, input.value);
+                    const barcodeCell = tr.cells[barcodeIndex];
+                    if (!barcodeCell.textContent) {
+                        const barcode = prompt('Add a barcode to this product');
+                        if (barcode) {
+                            barcodeCell.textContent = barcode;
+                            alert('Barcode has been added to this product');
+                        }
+                    }
                 });
             });
         }
@@ -238,22 +246,4 @@
             const downloadLink = document.getElementById('downloadLink');
             downloadLink.setAttribute('href', url);
             downloadLink.setAttribute('download', 'export.txt');
-            downloadLink.style.display = 'block';
-            downloadLink.click();
-            downloadLink.style.display = 'none';
-            URL.revokeObjectURL(url);
-        }
-
-        function saveTableData(data) {
-            localStorage.setItem('tableData', JSON.stringify(data));
-        }
-
-        function loadTableData() {
-            const tableData = JSON.parse(localStorage.getItem('tableData'));
-            if (tableData) {
-                populateTable(tableData);
-            }
-        }
-    </script>
-</body>
-</
+           
