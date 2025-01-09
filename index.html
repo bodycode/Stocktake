@@ -271,7 +271,7 @@
             const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
 
             if (inputValue !== '' && barcodeCell.textContent === '') {
-                let barcode = prompt('This product does not have barcode on file. Please enter the barcode. If the product does not have a barcode enter the product name without spaces. :');
+                let barcode = prompt('This product does not have barcode.\n Please enter the barcode.\n If the product does not have a barcode use the product name without spaces:');
                 while (barcode && !/^[a-zA-Z0-9]+$/.test(barcode)) {
                     barcode = prompt('Invalid input. Please enter a valid alphanumeric Barcode:');
                 }
