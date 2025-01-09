@@ -189,6 +189,7 @@
                 // Save input value on change
                 input.addEventListener('input', () => {
                     localStorage.setItem(`inputValue_${rowIndex}`, input.value);
+                    checkBarcode(rowIndex, input.value);
                 });
             });
         }
@@ -251,9 +252,3 @@
         function loadTableData() {
             const tableData = JSON.parse(localStorage.getItem('tableData'));
             if (tableData) {
-                populateTable(tableData);
-            }
-        }
-    </script>
-</body>
-</
