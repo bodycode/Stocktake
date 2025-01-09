@@ -1,11 +1,3 @@
-Your code looks mostly correct, but there are a few issues and improvements to consider:
-
-1. **CSS Import**: The `@import` statement for the Google Font should be placed at the top of the CSS block.
-2. **JavaScript**: There are some issues with the JavaScript code, particularly with the event listener for the `DOMContentLoaded` event and the `Barcode` prompt logic.
-
-Here's the corrected and improved version of your code:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -248,4 +240,20 @@ Here's the corrected and improved version of your code:
             downloadLink.setAttribute('download', 'export.txt');
             downloadLink.style.display = 'block';
             downloadLink.click();
-            downloadLink.style.display =
+            downloadLink.style.display = 'none';
+            URL.revokeObjectURL(url);
+        }
+
+        function saveTableData(data) {
+            localStorage.setItem('tableData', JSON.stringify(data));
+        }
+
+        function loadTableData() {
+            const tableData = JSON.parse(localStorage.getItem('tableData'));
+            if (tableData) {
+                populateTable(tableData);
+            }
+        }
+    </script>
+</body>
+</
