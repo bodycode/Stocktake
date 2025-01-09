@@ -271,7 +271,7 @@
             const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
 
             if (inputValue !== '' && barcodeCell.textContent === '') {
-                let barcode = prompt('This product does not have barcode.\n Please enter the barcode.\n If the product does not have a barcode use the product name without spaces:');
+                let barcode = prompt('This product does not have barcode.\n\nPlease enter the barcode.\n\nIf the product does not have a barcode use the product name without spaces:');
                 while (barcode && !/^[a-zA-Z0-9]+$/.test(barcode)) {
                     barcode = prompt('Invalid input. Please enter a valid alphanumeric Barcode:');
                 }
@@ -282,7 +282,7 @@
         }
 
         function clearAllData() {
-            const confirmation = confirm('You are about to clear all data. Do you wish to continue?');
+            const confirmation = confirm('You are about to clear all data. \n\nDo you wish to continue?');
             if (confirmation) {
                 localStorage.removeItem('tableData');
                 localStorage.clear();
