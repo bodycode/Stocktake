@@ -48,10 +48,8 @@
             color: #a89a68;
         }
         .upload-btn-wrapper {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
+            position: relative;
+            display: inline-block;
             margin-bottom: 8px; /* Reduced margin */
         }
         .upload-btn-wrapper input[type="file"] {
@@ -96,7 +94,6 @@
             display: none;
         }
         .video-wrapper {
-            position: relative;
             width: 90%;
             max-width: 400px;
             overflow: hidden;
@@ -106,12 +103,6 @@
         video {
             display: block;
             width: 100%;
-        }
-        #scanButton {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
         }
     </style>
 </head>
@@ -123,8 +114,8 @@
     </div>
     <div class="video-wrapper">
         <video id="video"></video>
-        <button id="scanButton" class="button" onclick="scanBarcode()">Scan Barcode</button>
     </div>
+    <button id="scanButton" class="button" onclick="scanBarcode()">Scan Barcode</button>
     <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()">
     <table id="dataGrid">
         <thead>
