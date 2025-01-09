@@ -1,3 +1,4 @@
+This code is working perfectly, please ad  a function that does the following without disturbing the other functionsstep 1- when the user adds data to the input or 'Actual' column check if the second or 'Barcode' column in the same row has any data.step 2- If there is no data then prompt the user to 'Add barcode to product' and allow them to input an alphanumeric response but do not allow anyother symbol or space.step 3- add that value to the second cell on that row
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -189,7 +190,6 @@
                 // Save input value on change
                 input.addEventListener('input', () => {
                     localStorage.setItem(`inputValue_${rowIndex}`, input.value);
-                    checkBarcode(rowIndex, input.value);
                 });
             });
         }
@@ -252,3 +252,10 @@
         function loadTableData() {
             const tableData = JSON.parse(localStorage.getItem('tableData'));
             if (tableData) {
+                populateTable(tableData);
+            }
+        }
+    </script>
+</body>
+</html>
+
