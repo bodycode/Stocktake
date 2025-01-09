@@ -6,125 +6,6 @@
     <title>Stocktake Buddy</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
-        
-        body {
-            font-family: 'Libre Baskerville', serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            min-height: 100vh;
-            background-color: #1c1c1c; /* Very dark charcoal */
-        }
-        h1 {
-            font-family: 'Montserrat', sans-serif;
-            color: white;
-            background-color: black;
-            text-align: center;
-            text-transform: uppercase;
-            font-weight: 500;
-            margin-top: 20px;
-            font-size: 48px;
-            padding: 10px;
-            letter-spacing: 0.05em; /* Slightly wider spacing between letters */
-            font-stretch: ultra-condensed;
-        }
-        .button {
-            display: inline-block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            font-size: 16px;
-            color: white;
-            border: 2px solid #a89a68;
-            background-color: transparent;
-            cursor: pointer;
-            text-align: center;
-            text-transform: uppercase;
-        }
-        .button::after {
-            content: ' →';
-            color: #a89a68;
-        }
-        .upload-btn-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-        .upload-btn-wrapper input[type="file"] {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-        input[type="text"], input[type="number"] {
-            width: 80%; /* 80% width of the screen */
-            max-width: 800px;
-            margin: 20px 0;
-            padding: 10px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        table {
-            width: 90%;
-            max-width: 800px;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background-color: white;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #a89a68; /* Table header color */
-            color: #1c1c1c; /* Very dark charcoal */
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2; /* Slightly lighter background for even rows */
-        }
-        tr:hover {
-            background-color: #ddd; /* Hover effect */
-        }
-        .hidden {
-            display: none;
-        }
-        video {
-            display: block;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            width: 90%;
-            max-width: 400px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Stocktake Buddy</h1>
-    <div class="upload-btn-wrapper">
-        <button class="button" onclick="document.getElementById('fileInput').click()">Upload CSV file</button>
-        <input type="file" id="fileInput" accept=".xlsx, .xls" onchange="handleFile(event)">
-    </div>
-    <video id="video"></video>
-    <button id="ScanButton" class="button" onclick="ScanBarcode()">Scan Barcode</button>
-    <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()">
-    <table id="dataGrid">
-        <thead>
-            <tr id="headerRow"></tr>
-        </thead>
-        <tbody id="dataBody"></tbody>
-    </table>
-    <button id="downloadButton" class="button" onclick="downloadCSV()">Download Count</button>
-    <a id="downloadLink" style="display:none;"></a>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-    <script src="https://unpkg.com/@zxing/library@latest"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            loadTableData();
-        });
 
         function handleFile(e) {
             const file = e.target.files[0];
@@ -247,3 +128,122 @@
             downloadLink.setAttribute('href', url);
             downloadLink.setAttribute('download', 'export.txt');
            
+        
+        body {
+            font-family: 'Libre Baskerville', serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #1c1c1c; /* Very dark charcoal */
+        }
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            background-color: black;
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-top: 20px;
+            font-size: 48px;
+            padding: 10px;
+            letter-spacing: 0.05em; /* Slightly wider spacing between letters */
+            font-stretch: ultra-condensed;
+        }
+        .button {
+            display: inline-block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            border: 2px solid #a89a68;
+            background-color: transparent;
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        .button::after {
+            content: ' →';
+            color: #a89a68;
+        }
+        .upload-btn-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .upload-btn-wrapper input[type="file"] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        input[type="text"], input[type="number"] {
+            width: 80%; /* 80% width of the screen */
+            max-width: 800px;
+            margin: 20px 0;
+            padding: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        table {
+            width: 90%;
+            max-width: 800px;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #a89a68; /* Table header color */
+            color: #1c1c1c; /* Very dark charcoal */
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2; /* Slightly lighter background for even rows */
+        }
+        tr:hover {
+            background-color: #ddd; /* Hover effect */
+        }
+        .hidden {
+            display: none;
+        }
+        video {
+            display: block;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            width: 90%;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Stocktake Buddy</h1>
+    <div class="upload-btn-wrapper">
+        <button class="button" onclick="document.getElementById('fileInput').click()">Upload CSV file</button>
+        <input type="file" id="fileInput" accept=".xlsx, .xls" onchange="handleFile(event)">
+    </div>
+    <video id="video"></video>
+    <button id="ScanButton" class="button" onclick="ScanBarcode()">Scan Barcode</button>
+    <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()">
+    <table id="dataGrid">
+        <thead>
+            <tr id="headerRow"></tr>
+        </thead>
+        <tbody id="dataBody"></tbody>
+    </table>
+    <button id="downloadButton" class="button" onclick="downloadCSV()">Download Count</button>
+    <a id="downloadLink" style="display:none;"></a>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            loadTableData();
+        });
