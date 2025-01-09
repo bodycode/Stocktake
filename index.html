@@ -1,3 +1,6 @@
+Oops! It looks like the closing tags were cut off. Here's the complete code with the closing tags included:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -189,6 +192,7 @@
                 // Save input value on change
                 input.addEventListener('input', () => {
                     localStorage.setItem(`inputValue_${rowIndex}`, input.value);
+                    checkBarcode(rowIndex, input.value);
                 });
             });
         }
@@ -218,61 +222,36 @@
             }).catch(err => console.error(err));
         }
 
-    function downloadCSV() {
-        const rows = document.getElementById('dataBody').getElementsByTagName('tr');
-        const csvData = [];
+        function downloadCSV() {
+            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
+            const csvData = [];
 
-        Array.from(rows).forEach(row => {
-            const cells = row.getElementsByTagName('td');
-            const firstCell = cells[0] ? cells[0].textContent : '';
-            if (firstCell.toLowerCase() !== 'totals:') {
-                const barcodeCell = cells[1] ? cells[1].textContent : ''; // 'Barcode' is the second column
-                const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
-                csvData.push([barcodeCell, actualCell].join(','));
-            }
-        });
+            Array.from(rows).forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                const firstCell = cells[0] ? cells[0].textContent : '';
+                if (firstCell.toLowerCase() !== 'totals:') {
+                    const barcodeCell = cells[1] ? cells[1].textContent : ''; // 'Barcode' is the second column
+                    const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
+                    csvData.push([barcodeCell, actualCell].join(','));
+                }
+            });
 
-        const csvContent = csvData.join('\n');
-        const blob = new Blob([csvContent], { type: 'text/plain;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const downloadLink = document.getElementById('downloadLink');
-        downloadLink.setAttribute('href', url);
-        downloadLink.setAttribute('download', 'export.txt');
-        downloadLink.style.display = 'block';
-        downloadLink.click();
-        downloadLink.style.display = 'none';
-        URL.revokeObjectURL(url);
-    }
+            const csvContent = csvData.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/plain;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const downloadLink = document.getElementById('downloadLink');
+            downloadLink.setAttribute('href', url);
+            downloadLink.setAttribute('download', 'export.txt');
+            downloadLink.style.display = 'block';
+            downloadLink.click();
+            downloadLink.style.display = 'none';
+            URL.revokeObjectURL(url);
+        }
+
         function saveTableData(data) {
             localStorage.setItem('tableData', JSON.stringify(data));
         }
 
         function loadTableData() {
             const tableData = JSON.parse(localStorage.getItem('tableData'));
-            if (tableData) {
-                populateTable(tableData);
-            }
-            
-    document.addEventListener('DOMContentLoaded', function() {
-    const table = document.querySelector('table');
-    
-    table.addEventListener('input', function(event) {
-        const target = event.target;
-        
-        if (target.classList.contains('Actual')) {
-            const row = target.closest('tr');
-            const barcodeCell = row.querySelector('.Barcode');
-            
-            if (target.value !== '' && barcodeCell.value === '') {
-                const Barcode = prompt('Please enter the Barcode:');
-                if (Barcode !== null) {
-                    BarcodeCell.value = Barcode;
-                }
-            }
-        }
-    });
-});
-        }
-    </script>
-</body>
-</html>
+            if (
