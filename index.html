@@ -1,3 +1,11 @@
+To show only the middle 33% of the video, you can use CSS to crop the video. This can be achieved by using the `clip-path` property. Here's how you can modify the video element to display only the middle 33%:
+
+1. Add a wrapper around the video element.
+2. Apply the `clip-path` property to the wrapper to show only the middle 33% of the video.
+
+Here's the updated code:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -92,12 +100,15 @@
         .hidden {
             display: none;
         }
-        video {
-            display: block;
-            margin: 10px 0;
-            border: 1px solid #ddd;
+        .video-wrapper {
             width: 90%;
             max-width: 400px;
+            overflow: hidden;
+            clip-path: inset(33% 0 33% 0); /* Show only the middle 33% of the video */
+        }
+        video {
+            display: block;
+            width: 100%;
         }
     </style>
 </head>
@@ -107,7 +118,9 @@
         <button class="button" onclick="document.getElementById('fileInput').click()">Upload CSV file</button>
         <input type="file" id="fileInput" accept=".xlsx, .xls" onchange="handleFile(event)">
     </div>
-    <video id="video"></video>
+    <div class="video-wrapper">
+        <video id="video"></video>
+    </div>
     <button id="scanButton" class="button" onclick="scanBarcode()">Scan Barcode</button>
     <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()">
     <table id="dataGrid">
@@ -248,7 +261,14 @@
 
         function saveTableData(data) {
             localStorage.setItem('tableData', JSON.stringify(data));
+        }
+
+        function loadTableData() {
+            const tableData = JSON.parse(localStorage.getItem('tableData'));
+            if (tableData) {
+                populateTable(tableData);
             }
+        }
 
         function checkBarcode(rowIndex, inputValue) {
             const rows = document.getElementById('dataBody').getElementsByTagName('tr');
@@ -256,24 +276,13 @@
             const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
 
             if (inputValue !== '' && barcodeCell.textContent === '') {
-                let barcode = prompt('There is no Barcode for this Product. Please enter the Barcode. If the product does not have a barcode enter the product name without spaces:');
+                let barcode = prompt('Please enter the Barcode:');
                 while (barcode && !/^[a-zA-Z0-9]+$/.test(barcode)) {
                     barcode = prompt('Invalid input. Please enter a valid alphanumeric Barcode:');
                 }
                 if (barcode !== null) {
                     barcodeCell.textContent = barcode;
                 }
-            }
-        }
-
-        function saveTableData(data) {
-            localStorage.setItem('tableData', JSON.stringify(data));
-        }
-
-        function loadTableData() {
-            const tableData = JSON.parse(localStorage.getItem('tableData'));
-            if (tableData) {
-                populateTable(tableData);
             }
         }
     </script>
