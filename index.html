@@ -1,6 +1,3 @@
-Let's try a different approach by ensuring all functions are defined within the same script block and are accessible globally. I'll highlight the changes in green.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -108,10 +105,10 @@ Let's try a different approach by ensuring all functions are defined within the 
     <h1>Stocktake Buddy</h1>
     <div class="upload-btn-wrapper">
         <button class="button" onclick="document.getElementById('fileInput').click()">Upload CSV file</button>
-        <input type="file" id="fileInput" accept=".xlsx, .xls" onchange="handleFile(event)">
+        <input type="file" id="fileInput" accept=".xlsx, .xls">
     </div>
     <video id="video"></video>
-    <button id="scanButton" class="button" onclick="scanBarcode()">Scan Barcode</button>
+    <button id="scanButton" class="button">Scan Barcode</button>
     <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()">
     <table id="dataGrid">
         <thead>
@@ -119,7 +116,7 @@ Let's try a different approach by ensuring all functions are defined within the 
         </thead>
         <tbody id="dataBody"></tbody>
     </table>
-    <button id="downloadButton" class="button" onclick="downloadCSV()">Download Count</button>
+    <button id="downloadButton" class="button">Download Count</button>
     <a id="downloadLink" style="display:none;"></a>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
@@ -127,6 +124,9 @@ Let's try a different approach by ensuring all functions are defined within the 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             loadTableData();
+            document.getElementById('fileInput').addEventListener('change', handleFile);
+            document.getElementById('scanButton').addEventListener('click', scanBarcode);
+            document.getElementById('downloadButton').addEventListener('click', downloadCSV);
         });
 
         **function handleFile(e) {**
@@ -233,6 +233,4 @@ Let's try a different approach by ensuring all functions are defined within the 
             **const csvData = [];**
 
             **Array.from(rows).forEach(row => {**
-                **const cells = row.getElementsByTagName('td');**
-                **const firstCell = cells[0] ? cells[0].textContent : '';**
-                **if (firstCell.toLowerCase() !== '
+                **const cells = row.getElementsByTagName
