@@ -254,4 +254,31 @@ Oops! It looks like the closing tags were cut off. Here's the complete code with
 
         function loadTableData() {
             const tableData = JSON.parse(localStorage.getItem('tableData'));
-            if (
+            if (tableData) {
+                populateTable(tableData);
+            }
+            
+    document.addEventListener('DOMContentLoaded', function() {
+    const table = document.querySelector('table');
+    
+    table.addEventListener('input', function(event) {
+        const target = event.target;
+        
+        if (target.classList.contains('Actual')) {
+            const row = target.closest('tr');
+            const barcodeCell = row.querySelector('.Barcode');
+            
+            if (target.value !== '' && barcodeCell.value === '') {
+                const Barcode = prompt('Please enter the Barcode:');
+                if (Barcode !== null) {
+                    BarcodeCell.value = Barcode;
+                }
+            }
+        }
+    });
+});
+        }
+    </script>
+</body>
+</html>
+
