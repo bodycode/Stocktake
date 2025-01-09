@@ -1,3 +1,8 @@
+It looks like the functions `handleFile`, `scanBarcode`, and `downloadCSV` are not being recognized. This usually happens when the functions are not defined in the scope where they are being called. Let's make sure these functions are correctly defined and accessible.
+
+Here’s a revised version of your code with the necessary functions properly defined and scoped:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,12 +135,16 @@
             const file = e.target.files[0];
             const reader = new FileReader();
             reader.onload = function(event) {
-                const data = new Uint8Array(event.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
-                populateTable(jsonData);
-                saveTableData(jsonData);
+                try {
+                    const data = new Uint8Array(event.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+                    populateTable(jsonData);
+                    saveTableData(jsonData);
+                } catch (error) {
+                    console.error("Error reading file:", error);
+                }
             };
             reader.readAsArrayBuffer(file);
         }
@@ -215,7 +224,10 @@
             codeReader.decodeOnceFromVideoDevice(undefined, 'video').then(result => {
                 document.getElementById('searchInput').value = result.text;
                 searchTable();
-            }).catch(err => console.error(err));
+            }).catch(err => {
+                console.error("Error scanning barcode:", err);
+                alert("Failed to access the camera. Please check your browser settings.");
+            });
         }
 
         function downloadCSV() {
@@ -237,7 +249,4 @@
             const url = URL.createObjectURL(blob);
             const downloadLink = document.getElementById('downloadLink');
             downloadLink.setAttribute('href', url);
-            downloadLink.setAttribute('download', 'export.txt');
-            downloadLink.style.display = 'block';
-            downloadLink.click();
-            downloadLink.style.display =
+            downloadLink.setAttribute('download', '
