@@ -1,3 +1,6 @@
+Got it! Let's add the `type` attributes to the buttons to ensure they function correctly. Here is the updated code with the `type` attributes added:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -104,11 +107,11 @@
 <body>
     <h1>Stocktake Buddy</h1>
     <div class="upload-btn-wrapper">
-        <button class="button" onclick="document.getElementById('fileInput').click()">Upload CSV file</button>
+        <button class="button" type="button" onclick="document.getElementById('fileInput').click()">Upload CSV file</button>
         <input type="file" id="fileInput" accept=".xlsx, .xls">
     </div>
     <video id="video"></video>
-    <button id="scanButton" class="button">Scan Barcode</button>
+    <button id="scanButton" class="button" type="button">Scan Barcode</button>
     <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()">
     <table id="dataGrid">
         <thead>
@@ -116,7 +119,7 @@
         </thead>
         <tbody id="dataBody"></tbody>
     </table>
-    <button id="downloadButton" class="button">Download Count</button>
+    <button id="downloadButton" class="button" type="button">Download Count</button>
     <a id="downloadLink" style="display:none;"></a>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
@@ -245,4 +248,5 @@
 
             const csvContent = csvData.join('\n');
             const blob = new Blob([csvContent], { type: 'text/plain;charset=utf-8;' });
-            const url = URL.createObject
+            const url = URL.createObjectURL(blob);
+           
