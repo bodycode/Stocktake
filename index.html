@@ -280,23 +280,6 @@
                 }
             }
         }
-        // Style the prompt box
-const style = document.createElement('style');
-style.innerHTML = `
-    ::-webkit-input-placeholder {
-        text-align: center;
-    }
-    :-moz-placeholder { /* Firefox 18- */
-        text-align: center;
-    }
-    ::-moz-placeholder {  /* Firefox 19+ */
-        text-align: center;
-    }
-    :-ms-input-placeholder {
-        text-align: center;
-    }
-`;
-document.head.appendChild(style);
 
         function clearAllData() {
             const confirmation = confirm('You are about to clear all data. Do you wish to continue?');
