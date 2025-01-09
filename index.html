@@ -1,3 +1,6 @@
+Let's try a different approach by ensuring all functions are defined within the same script block and are accessible globally. I'll highlight the changes in green.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -126,122 +129,110 @@
             loadTableData();
         });
 
-        function handleFile(e) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                try {
-                    const data = new Uint8Array(event.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
-                    populateTable(jsonData);
-                    saveTableData(jsonData);
-                } catch (error) {
-                    console.error("Error reading file:", error);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
+        **function handleFile(e) {**
+            **const file = e.target.files[0];**
+            **const reader = new FileReader();**
+            **reader.onload = function(event) {**
+                **try {**
+                    **const data = new Uint8Array(event.target.result);**
+                    **const workbook = XLSX.read(data, {type: 'array'});**
+                    **const firstSheet = workbook.Sheets[workbook.SheetNames[0]];**
+                    **const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});**
+                    **populateTable(jsonData);**
+                    **saveTableData(jsonData);**
+                **} catch (error) {**
+                    **console.error("Error reading file:", error);**
+                **}**
+            **};**
+            **reader.readAsArrayBuffer(file);**
+        **}**
 
-        function populateTable(data) {
-            const headerRow = document.getElementById('headerRow');
-            const dataBody = document.getElementById('dataBody');
-            headerRow.innerHTML = '';
-            dataBody.innerHTML = '';
+        **function populateTable(data) {**
+            **const headerRow = document.getElementById('headerRow');**
+            **const dataBody = document.getElementById('dataBody');**
+            **headerRow.innerHTML = '';**
+            **dataBody.innerHTML = '';**
 
-            let barcodeIndex = -1;
+            **let barcodeIndex = -1;**
 
-            // Create header row
-            data[0].forEach((header, index) => {
-                const th = document.createElement('th');
-                th.textContent = header;
-                if (header.toLowerCase() === 'barcode') {
-                    th.classList.add('hidden');
-                    barcodeIndex = index;
-                }
-                headerRow.appendChild(th);
-            });
-            const th = document.createElement('th');
-            th.textContent = 'Actual';
-            headerRow.appendChild(th);
+            **// Create header row**
+            **data[0].forEach((header, index) => {**
+                **const th = document.createElement('th');**
+                **th.textContent = header;**
+                **if (header.toLowerCase() === 'barcode') {**
+                    **th.classList.add('hidden');**
+                    **barcodeIndex = index;**
+                **}**
+                **headerRow.appendChild(th);**
+            **});**
+            **const th = document.createElement('th');**
+            **th.textContent = 'Actual';**
+            **headerRow.appendChild(th);**
 
-            // Create data rows
-            data.slice(1).forEach((row, rowIndex) => {
-                const tr = document.createElement('tr');
-                row.forEach((cell, index) => {
-                    const td = document.createElement('td');
-                    td.textContent = cell;
-                    if (index === barcodeIndex) {
-                        td.classList.add('hidden');
-                    }
-                    tr.appendChild(td);
-                });
-                const inputTd = document.createElement('td');
-                const input = document.createElement('input');
-                input.type = 'number';
-                inputTd.appendChild(input);
-                tr.appendChild(inputTd);
-                dataBody.appendChild(tr);
+            **// Create data rows**
+            **data.slice(1).forEach((row, rowIndex) => {**
+                **const tr = document.createElement('tr');**
+                **row.forEach((cell, index) => {**
+                    **const td = document.createElement('td');**
+                    **td.textContent = cell;**
+                    **if (index === barcodeIndex) {**
+                        **td.classList.add('hidden');**
+                    **}**
+                    **tr.appendChild(td);**
+                **});**
+                **const inputTd = document.createElement('td');**
+                **const input = document.createElement('input');**
+                **input.type = 'number';**
+                **inputTd.appendChild(input);**
+                **tr.appendChild(inputTd);**
+                **dataBody.appendChild(tr);**
 
-                // Load saved input value if available
-                const savedInputValue = localStorage.getItem(`inputValue_${rowIndex}`);
-                if (savedInputValue) {
-                    input.value = savedInputValue;
-                }
+                **// Load saved input value if available**
+                **const savedInputValue = localStorage.getItem(`inputValue_${rowIndex}`);**
+                **if (savedInputValue) {**
+                    **input.value = savedInputValue;**
+                **}**
 
-                // Save input value on change
-                input.addEventListener('input', () => {
-                    localStorage.setItem(`inputValue_${rowIndex}`, input.value);
-                });
-            });
-        }
+                **// Save input value on change**
+                **input.addEventListener('input', () => {**
+                    **localStorage.setItem(`inputValue_${rowIndex}`, input.value);**
+                **});**
+            **});**
+        **}**
 
-        function searchTable() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toLowerCase();
-            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
-            Array.from(rows).forEach(row => {
-                const cells = row.getElementsByTagName('td');
-                let match = false;
-                Array.from(cells).forEach(cell => {
-                    if (cell.textContent.toLowerCase().indexOf(filter) > -1) {
-                        match = true;
-                    }
-                });
-                row.style.display = match ? '' : 'none';
-            });
-        }
+        **function searchTable() {**
+            **const input = document.getElementById('searchInput');**
+            **const filter = input.value.toLowerCase();**
+            **const rows = document.getElementById('dataBody').getElementsByTagName('tr');**
+            **Array.from(rows).forEach(row => {**
+                **const cells = row.getElementsByTagName('td');**
+                **let match = false;**
+                **Array.from(cells).forEach(cell => {**
+                    **if (cell.textContent.toLowerCase().indexOf(filter) > -1) {**
+                        **match = true;**
+                    **}**
+                **});**
+                **row.style.display = match ? '' : 'none';**
+            **});**
+        **}**
 
-        function scanBarcode() {
-            document.getElementById('searchInput').value = '';
-            const codeReader = new ZXing.BrowserBarcodeReader();
-            codeReader.decodeOnceFromVideoDevice(undefined, 'video').then(result => {
-                document.getElementById('searchInput').value = result.text;
-                searchTable();
-            }).catch(err => {
-                console.error("Error scanning barcode:", err);
-                alert("Failed to access the camera. Please check your browser settings.");
-            });
-        }
+        **function scanBarcode() {**
+            **document.getElementById('searchInput').value = '';**
+            **const codeReader = new ZXing.BrowserBarcodeReader();**
+            **codeReader.decodeOnceFromVideoDevice(undefined, 'video').then(result => {**
+                **document.getElementById('searchInput').value = result.text;**
+                **searchTable();**
+            **}).catch(err => {**
+                **console.error("Error scanning barcode:", err);**
+                **alert("Failed to access the camera. Please check your browser settings.");**
+            **});**
+        **}**
 
-        function downloadCSV() {
-            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
-            const csvData = [];
+        **function downloadCSV() {**
+            **const rows = document.getElementById('dataBody').getElementsByTagName('tr');**
+            **const csvData = [];**
 
-            Array.from(rows).forEach(row => {
-                const cells = row.getElementsByTagName('td');
-                const firstCell = cells[0] ? cells[0].textContent : '';
-                if (firstCell.toLowerCase() !== 'totals:') {
-                    const barcodeCell = cells[1] ? cells[1].textContent : ''; // 'Barcode' is the second column
-                    const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
-                    csvData.push([barcodeCell, actualCell].join(','));
-                }
-            });
-
-            const csvContent = csvData.join('\n');
-            const blob = new Blob([csvContent], { type: 'text/plain;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const downloadLink = document.getElementById('downloadLink');
-            downloadLink.setAttribute('href', url);
-            downloadLink.setAttribute('download', '
+            **Array.from(rows).forEach(row => {**
+                **const cells = row.getElementsByTagName('td');**
+                **const firstCell = cells[0] ? cells[0].textContent : '';**
+                **if (firstCell.toLowerCase() !== '
