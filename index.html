@@ -1,4 +1,3 @@
-This code is working perfectly, please ad  a function that does the following without disturbing the other functionsstep 1- when the user adds data to the input or 'Actual' column check if the second or 'Barcode' column in the same row has any data.step 2- If there is no data then prompt the user to 'Add barcode to product' and allow them to input an alphanumeric response but do not allow anyother symbol or space.step 3- add that value to the second cell on that row
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,6 +96,7 @@ This code is working perfectly, please ad  a function that does the following wi
             display: block;
             margin: 10px 0;
             border: 1px solid #ddd;
+            height: 100px;
             width: 90%;
             max-width: 400px;
         }
@@ -219,32 +219,31 @@ This code is working perfectly, please ad  a function that does the following wi
             }).catch(err => console.error(err));
         }
 
-        function downloadCSV() {
-            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
-            const csvData = [];
+    function downloadCSV() {
+        const rows = document.getElementById('dataBody').getElementsByTagName('tr');
+        const csvData = [];
 
-            Array.from(rows).forEach(row => {
-                const cells = row.getElementsByTagName('td');
-                const firstCell = cells[0] ? cells[0].textContent : '';
-                if (firstCell.toLowerCase() !== 'totals:') {
-                    const barcodeCell = cells[1] ? cells[1].textContent : ''; // 'Barcode' is the second column
-                    const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
-                    csvData.push([barcodeCell, actualCell].join(','));
-                }
-            });
+        Array.from(rows).forEach(row => {
+            const cells = row.getElementsByTagName('td');
+            const firstCell = cells[0] ? cells[0].textContent : '';
+            if (firstCell.toLowerCase() !== 'totals:') {
+                const barcodeCell = cells[1] ? cells[1].textContent : ''; // 'Barcode' is the second column
+                const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
+                csvData.push([barcodeCell, actualCell].join(','));
+            }
+        });
 
-            const csvContent = csvData.join('\n');
-            const blob = new Blob([csvContent], { type: 'text/plain;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const downloadLink = document.getElementById('downloadLink');
-            downloadLink.setAttribute('href', url);
-            downloadLink.setAttribute('download', 'export.txt');
-            downloadLink.style.display = 'block';
-            downloadLink.click();
-            downloadLink.style.display = 'none';
-            URL.revokeObjectURL(url);
-        }
-
+        const csvContent = csvData.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/plain;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const downloadLink = document.getElementById('downloadLink');
+        downloadLink.setAttribute('href', url);
+        downloadLink.setAttribute('download', 'export.txt');
+        downloadLink.style.display = 'block';
+        downloadLink.click();
+        downloadLink.style.display = 'none';
+        URL.revokeObjectURL(url);
+    }
         function saveTableData(data) {
             localStorage.setItem('tableData', JSON.stringify(data));
         }
@@ -254,8 +253,27 @@ This code is working perfectly, please ad  a function that does the following wi
             if (tableData) {
                 populateTable(tableData);
             }
+            
+    document.addEventListener('DOMContentLoaded', function() {
+    const table = document.querySelector('table');
+    
+    table.addEventListener('input', function(event) {
+        const target = event.target;
+        
+        if (target.classList.contains('Actual')) {
+            const row = target.closest('tr');
+            const barcodeCell = row.querySelector('.Barcode');
+            
+            if (target.value !== '' && barcodeCell.value === '') {
+                const Barcode = prompt('Please enter the Barcode:');
+                if (Barcode !== null) {
+                    BarcodeCell.value = Barcode;
+                }
+            }
+        }
+    });
+});
         }
     </script>
 </body>
 </html>
-
