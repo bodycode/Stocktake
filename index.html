@@ -250,6 +250,26 @@
             localStorage.setItem('tableData', JSON.stringify(data));
             }
 
+        function checkBarcode(rowIndex, inputValue) {
+            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
+            const row = rows[rowIndex];
+            const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
+
+            if (inputValue !== '' && barcodeCell.textContent === '') {
+                let barcode = prompt('Please enter the Barcode:');
+                while (barcode && !/^[a-zA-Z0-9]+$/.test(barcode)) {
+                    barcode = prompt('Invalid input. Please enter a valid alphanumeric Barcode:');
+                }
+                if (barcode !== null) {
+                    barcodeCell.textContent = barcode;
+                }
+            }
+        }
+
+        function saveTableData(data) {
+            localStorage.setItem('tableData', JSON.stringify(data));
+        }
+
         function loadTableData() {
             const tableData = JSON.parse(localStorage.getItem('tableData'));
             if (tableData) {
@@ -259,4 +279,3 @@
     </script>
 </body>
 </html>
-
