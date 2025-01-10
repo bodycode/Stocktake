@@ -57,28 +57,12 @@
         }
         .upload-btn-wrapper label {
             width: 100%;
-            display: inline-block;
+            display: block; /* Changed to block for full width */
             box-sizing: border-box;
+            margin: 0; /* Removed any margin */
         }
         .upload-btn-wrapper input[type="file"] {
-            display: none; /* Hide default file input */
-        }
-        .upload-btn-wrapper .custom-file-upload {
-            display: inline-block;
-            width: 100%;
-            padding: 10px 20px;
-            font-size: 16px;
-            color: white;
-            border: 2px solid #a89a68;
-            background-color: transparent;
-            cursor: pointer;
-            text-align: center;
-            text-transform: uppercase;
-            box-sizing: border-box;
-        }
-        .upload-btn-wrapper .custom-file-upload::after {
-            content: ' →';
-            color: #a89a68;
+            display: none;
         }
         input[type="text"], input[type="number"] {
             width: 80%;
