@@ -49,20 +49,16 @@
             content: ' →';
             color: #a89a68;
         }
-        .upload-btn-wrapper {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 8px; 
-            width: 80%; /* Added to make the wrapper 80% */
-        }
-        .upload-btn-wrapper input[type="file"] {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
+    position: relative;
+    display: inline-block;
+    margin-bottom: 8px; 
+    width: 80%; /* Ensure the wrapper takes 80% width */
+}
+
+.upload-btn-wrapper .button,
+.upload-btn-wrapper input[type="file"] {
+    width: 100%; /* Make button and input take 100% of the wrapper width */
+}
         input[type="text"], input[type="number"] {
             width: 80%;
             max-width: 800px;
