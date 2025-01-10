@@ -46,19 +46,16 @@
             text-align: center;
             text-transform: uppercase;
             box-sizing: border-box;
+            position: relative;
         }
         .button::after {
             content: ' →';
             color: #a89a68;
         }
         .upload-btn-wrapper {
-            display: flex;
-            justify-content: center;
             width: 80%;
-            box-sizing: border-box;
-        }
-        .upload-btn-wrapper .button {
-            width: 100%;
+            position: relative;
+            display: inline-block;
         }
         .upload-btn-wrapper input[type="file"] {
             position: absolute;
@@ -66,8 +63,8 @@
             top: 0;
             opacity: 0;
             cursor: pointer;
-            height: 100%;
             width: 100%;
+            height: 100%;
         }
         input[type="text"], input[type="number"] {
             width: 80%;
