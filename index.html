@@ -16,7 +16,7 @@
             align-items: center;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #1c1c1c; /* Very dark charcoal */
+            background-color: #1c1c1c; 
         }
         h1 {
             font-family: 'Montserrat', sans-serif;
@@ -28,13 +28,14 @@
             margin-top: 20px;
             font-size: 48px;
             padding: 10px;
-            letter-spacing: 0.05em; /* Slightly wider spacing between letters */
+            letter-spacing: 0.05em; 
             font-stretch: ultra-condensed;
+            width: 80%; /* Ensure h1 is 80% of the screen width */
         }
         .button {
             display: inline-block;
-            margin: 8px auto; /* Reduced margin */
-            width: 80%;
+            margin: 8px auto; 
+            width: 80%; /* Already set to 80% */
             padding: 10px 20px;
             font-size: 16px;
             color: white;
@@ -51,7 +52,8 @@
         .upload-btn-wrapper {
             position: relative;
             display: inline-block;
-            margin-bottom: 8px; /* Reduced margin */
+            margin-bottom: 8px; 
+            width: 80%; /* Added to make the wrapper 80% */
         }
         .upload-btn-wrapper input[type="file"] {
             font-size: 100px;
@@ -62,7 +64,7 @@
             cursor: pointer;
         }
         input[type="text"], input[type="number"] {
-            width: 80%; /* 80% width of the screen */
+            width: 80%;
             max-width: 800px;
             margin: 20px 0;
             padding: 10px;
@@ -70,7 +72,7 @@
             box-sizing: border-box;
         }
         table {
-            width: 90%;
+            width: 80%; /* Changed to 80% of the screen width */
             max-width: 800px;
             border-collapse: collapse;
             margin-top: 20px;
@@ -82,28 +84,28 @@
             text-align: left;
         }
         th {
-            background-color: #a89a68; /* Table header color */
-            color: #1c1c1c; /* Very dark charcoal */
+            background-color: #a89a68;
+            color: #1c1c1c;
         }
         tr:nth-child(even) {
-            background-color: #f2f2f2; /* Slightly lighter background for even rows */
+            background-color: #f2f2f2; 
         }
         tr:hover {
-            background-color: #ddd; /* Hover effect */
+            background-color: #ddd; 
         }
         .hidden {
             display: none;
         }
         .video-wrapper {
-            width: 90%;
+            width: 80%; /* Changed to 80% of the screen width */
             max-width: 400px;
             overflow: hidden;
-            clip-path: inset(33% 0 33% 0); /* Show only the middle 33% of the video */
-            margin: 8px 0; /* Reduced margin */
+            clip-path: inset(33% 0 33% 0);
+            margin: 8px 0; 
         }
         video {
             display: block;
-            width: 100%;
+            width: 100%; 
         }
     </style>
 </head>
