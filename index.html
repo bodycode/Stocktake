@@ -3,146 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stocktake Buddy</title>
+    <title>Document</title>
     <style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
-
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
         
-head {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 100%;
-    background-color: black;
-    z-index: 0;
-}
-        
-body {
-    font-family: 'Libre Baskerville', serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: #1c1c1c; 
-    position: relative;
-}
+        body {
+            font-family: 'Libre Baskerville', serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #1c1c1c; 
+        }
 
-h1 {
-    font-family: 'Montserrat Hairline', sans-serif;
-    color: white;
-    background-color: black;
-    text-align: center;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin-top: 20px;
-    font-size: 48px;
-    padding: 10px;
-    letter-spacing: 0.05em; 
-    font-stretch: ultra-condensed;
-    width: 100%;
-    box-sizing: border-box;
-    position: relative;
-    z-index: 1;
-}
+        .top-wrapper {
+            width: 100%;
+            background-color: black;
+            color: black; /* Ensures text color is black */
+        }
 
-.button {
-    display: inline-block;
-    margin: 8px 0; 
-    width: 80%;
-    padding: 10px 20px;
-    font-size: 16px;
-    color: white;
-    border: 2px solid #a89a68;
-    background-color: transparent;
-    cursor: pointer;
-    text-align: center;
-    text-transform: uppercase;
-    box-sizing: border-box;
-}
+        h1 {
+            font-family: 'Montserrat Hairline', sans-serif;
+            color: white;
+            background-color: black;
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-top: 20px;
+            font-size: 48px;
+            padding: 10px;
+            letter-spacing: 0.05em; 
+            font-stretch: ultra-condensed;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-.button::after {
-    content: ' →';
-    color: #a89a68;
-}
+        .button {
+            display: inline-block;
+            margin: 8px 0; 
+            width: 80%;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            border: 2px solid #a89a68;
+            background-color: transparent;
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+            box-sizing: border-box;
+        }
 
-.upload-btn-wrapper {
-    width: 100%;
-    box-sizing: border-box;
-    margin-left: 20%;
-}
+        .button::after {
+            content: ' →';
+            color: #a89a68;
+        }
 
-.upload-btn-wrapper label {
-    width: 100%;
-    display: block; /* Changed to block for full width */
-    box-sizing: border-box;
-    margin: 0; /* Removed any margin */
-}
+        .upload-btn-wrapper {
+            width: 100%;
+            box-sizing: border-box;
+            margin-left: 20%;
+        }
 
-.upload-btn-wrapper input[type="file"] {
-    display: none;
-}
+        .upload-btn-wrapper label {
+            width: 100%;
+            display: block; /* Changed to block for full width */
+            box-sizing: border-box;
+            margin: 0; /* Removed any margin */
+        }
 
-input[type="text"], input[type="number"] {
-    width: 80%;
-    max-width: 800px;
-    margin: 20px 0;
-    padding: 10px;
-    font-size: 16px;
-    box-sizing: border-box;
-}
+        .upload-btn-wrapper input[type="file"] {
+            display: none;
+        }
 
-table {
-    width: 80%; 
-    max-width: 800px;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background-color: white;
-}
+        input[type="text"], input[type="number"] {
+            width: 80%;
+            max-width: 800px;
+            margin: 20px 0;
+            padding: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
+        table {
+            width: 80%; 
+            max-width: 800px;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+        }
 
-th {
-    background-color: #a89a68;
-    color: #1c1c1c;
-}
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
 
-tr:nth-child(even) {
-    background-color: #f2f2f2; 
-}
+        th {
+            background-color: #a89a68;
+            color: #1c1c1c;
+        }
 
-tr:hover {
-    background-color: #ddd; 
-}
+        tr:nth-child(even) {
+            background-color: #f2f2f2; 
+        }
 
-.hidden {
-    display: none;
-}
+        tr:hover {
+            background-color: #ddd; 
+        }
 
-.video-wrapper {
-    width: 80%; 
-    max-width: 400px;
-    overflow: hidden;
-    clip-path: inset(33% 0 33% 0);
-    margin: 0px 0; 
-}
+        .hidden {
+            display: none;
+        }
 
-video {
-    display: block;
-    width: 100%; 
-    margin: -80px 0; 
-}
+        .video-wrapper {
+            width: 80%; 
+            max-width: 400px;
+            overflow: hidden;
+            clip-path: inset(33% 0 33% 0);
+            margin: 0px 0; 
+        }
+
+        video {
+            display: block;
+            width: 100%; 
+            margin: -80px 0; 
+        }
     </style>
 </head>
 <body>
+    <div class="top-wrapper">
+        <!-- Add any content you want above the H1 here -->
+    </div>
     <h1>Stocktake Buddy</h1>
     <div class="upload-btn-wrapper">
         <button class="button" onclick="document.getElementById('fileInput').click()">Upload CSV file</button>
