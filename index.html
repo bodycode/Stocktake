@@ -315,7 +315,58 @@
                 }
             }
         }
+function promptForBarcode() {
+    const promptDiv = document.createElement('div');
+    promptDiv.style.position = 'fixed';
+    promptDiv.style.top = '50%';
+    promptDiv.style.left = '50%';
+    promptDiv.style.transform = 'translate(-50%, -50%)';
+    promptDiv.style.backgroundColor = 'white';
+    promptDiv.style.padding = '20px';
+    promptDiv.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
+    promptDiv.style.zIndex = '1000';
 
+    const promptText = document.createElement('p');
+    promptText.textContent = 'This product does not have a barcode.\n\nPlease enter the barcode or scan it.';
+    promptDiv.appendChild(promptText);
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Enter barcode';
+    promptDiv.appendChild(input);
+
+    const scanButton = document.createElement('button');
+    scanButton.textContent = 'Scan Barcode';
+    scanButton.onclick = () => {
+        scanBarcodeForPrompt(input);
+    };
+    promptDiv.appendChild(scanButton);
+
+    const submitButton = document.createElement('button');
+    submitButton.textContent = 'Submit';
+    submitButton.onclick = () => {
+        if (/^[a-zA-Z0-9]+$/.test(input.value)) {
+            document.body.removeChild(promptDiv);
+            resolvePrompt(input.value);
+        } else {
+            alert('Invalid input. Please enter a valid alphanumeric Barcode.');
+        }
+    };
+    promptDiv.appendChild(submitButton);
+
+    document.body.appendChild(promptDiv);
+
+    return new Promise((resolve) => {
+        window.resolvePrompt = resolve;
+    });
+}
+
+function scanBarcodeForPrompt(input) {
+    const codeReader = new ZXing.BrowserBarcodeReader();
+    codeReader.decodeOnceFromVideoDevice(undefined, 'video').then(result => {
+        input.value = result.text;
+    }).catch(err => console.error(err));
+}
         function clearAllData() {
             const confirmation = confirm('You are about to clear all data. \n\nDo you wish to continue?');
             if (confirmation) {
