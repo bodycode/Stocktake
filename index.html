@@ -306,67 +306,66 @@
             const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
 
             if (inputValue !== '' && barcodeCell.textContent === '') {
-                let barcode = prompt('This product does not have barcode.\n\nPlease enter the barcode.\n\nIf the product does not have a barcode use the product name without spaces:');
-                while (barcode && !/^[a-zA-Z0-9]+$/.test(barcode)) {
-                    barcode = prompt('Invalid input. Please enter a valid alphanumeric Barcode:');
-                }
+                let barcode = promptForBarcode();
                 if (barcode !== null) {
                     barcodeCell.textContent = barcode;
                 }
             }
         }
-function promptForBarcode() {
-    const promptDiv = document.createElement('div');
-    promptDiv.style.position = 'fixed';
-    promptDiv.style.top = '50%';
-    promptDiv.style.left = '50%';
-    promptDiv.style.transform = 'translate(-50%, -50%)';
-    promptDiv.style.backgroundColor = 'white';
-    promptDiv.style.padding = '20px';
-    promptDiv.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
-    promptDiv.style.zIndex = '1000';
 
-    const promptText = document.createElement('p');
-    promptText.textContent = 'This product does not have a barcode.\n\nPlease enter the barcode or scan it.';
-    promptDiv.appendChild(promptText);
+        function promptForBarcode() {
+            const promptDiv = document.createElement('div');
+            promptDiv.style.position = 'fixed';
+            promptDiv.style.top = '50%';
+            promptDiv.style.left = '50%';
+            promptDiv.style.transform = 'translate(-50%, -50%)';
+            promptDiv.style.backgroundColor = 'white';
+            promptDiv.style.padding = '20px';
+            promptDiv.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
+            promptDiv.style.zIndex = '1000';
 
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'Enter barcode';
-    promptDiv.appendChild(input);
+            const promptText = document.createElement('p');
+            promptText.textContent = 'This product does not have a barcode.\n\nPlease enter the barcode or scan it.';
+            promptDiv.appendChild(promptText);
 
-    const scanButton = document.createElement('button');
-    scanButton.textContent = 'Scan Barcode';
-    scanButton.onclick = () => {
-        scanBarcodeForPrompt(input);
-    };
-    promptDiv.appendChild(scanButton);
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Enter barcode';
+            promptDiv.appendChild(input);
 
-    const submitButton = document.createElement('button');
-    submitButton.textContent = 'Submit';
-    submitButton.onclick = () => {
-        if (/^[a-zA-Z0-9]+$/.test(input.value)) {
-            document.body.removeChild(promptDiv);
-            resolvePrompt(input.value);
-        } else {
-            alert('Invalid input. Please enter a valid alphanumeric Barcode.');
+            const scanButton = document.createElement('button');
+            scanButton.textContent = 'Scan Barcode';
+            scanButton.onclick = () => {
+                scanBarcodeForPrompt(input);
+            };
+            promptDiv.appendChild(scanButton);
+
+            const submitButton = document.createElement('button');
+            submitButton.textContent = 'Submit';
+            submitButton.onclick = () => {
+                if (/^[a-zA-Z0-9]+$/.test(input.value)) {
+                    document.body.removeChild(promptDiv);
+                    resolvePrompt(input.value);
+                } else {
+                    alert('Invalid input. Please enter a valid alphanumeric Barcode.');
+                }
+            };
+            promptDiv.appendChild(submitButton);
+
+            document.body.appendChild(promptDiv);
+
+            return new Promise((resolve) => {
+                window.resolvePrompt = resolve;
+            });
         }
-    };
-    promptDiv.appendChild(submitButton);
 
-    document.body.appendChild(promptDiv);
+        function scanBarcodeForPrompt(input) {
+            const codeReader = new ZXing.BrowserBarcodeReader();
+            codeReader.decodeOnceFromVideoDevice(undefined, 'video').then(result => {
+                input.value = result.text;
+            }).catch(err => console.error(err));
+        }
 
-    return new Promise((resolve) => {
-        window.resolvePrompt = resolve;
-    });
-}
-
-function scanBarcodeForPrompt(input) {
-    const codeReader = new ZXing.BrowserBarcodeReader();
-    codeReader.decodeOnceFromVideoDevice(undefined, 'video').then(result => {
-        input.value = result.text;
-    }).catch(err => console.error(err));
-}
         function clearAllData() {
             const confirmation = confirm('You are about to clear all data. \n\nDo you wish to continue?');
             if (confirmation) {
