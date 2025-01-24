@@ -346,69 +346,70 @@
             }
         }
 
-        function checkBarcode(rowIndex, inputValue) {
-            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
-            const row = rows[rowIndex];
-            const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
+function checkBarcode(rowIndex, inputValue) {
+    const rows = document.getElementById('dataBody').getElementsByTagName('tr');
+    const row = rows[rowIndex];
+    const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
 
-            if (inputValue !== '' && barcodeCell.textContent === '') {
-                let barcode = promptForBarcode();
-                if (barcode !== null) {
-                    barcodeCell.textContent = barcode;
-                }
+    if (inputValue !== '' && barcodeCell.textContent === '') {
+        promptForBarcode().then(barcode => {
+            if (barcode !== null) {
+                barcodeCell.textContent = barcode;
             }
+        });
+    }
+}
+
+function promptForBarcode() {
+    const promptOverlay = document.createElement('div');
+    promptOverlay.className = 'prompt-overlay';
+
+    const promptBox = document.createElement('div');
+    promptBox.className = 'prompt-box';
+
+    const promptText = document.createElement('p');
+    promptText.textContent = 'This product does not have a barcode.\n\nPlease enter the barcode or scan it.';
+    promptBox.appendChild(promptText);
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Enter barcode';
+    promptBox.appendChild(input);
+
+    const scanButton = document.createElement('button');
+    scanButton.textContent = 'Scan Barcode';
+    scanButton.onclick = () => {
+        scanBarcodeForPrompt(input);
+    };
+    promptBox.appendChild(scanButton);
+
+    const submitButton = document.createElement('button');
+    submitButton.textContent = 'Submit';
+    submitButton.onclick = () => {
+        if (/^[a-zA-Z0-9]+$/.test(input.value)) {
+            document.body.removeChild(promptOverlay);
+            resolvePrompt(input.value);
+        } else {
+            alert('Invalid input. Please enter a valid alphanumeric Barcode.');
         }
+    };
+    promptBox.appendChild(submitButton);
 
-        function promptForBarcode() {
-            const promptOverlay = document.createElement('div');
-            promptOverlay.className = 'prompt-overlay';
+    const cancelButton = document.createElement('button');
+    cancelButton.textContent = 'Cancel';
+    cancelButton.onclick = () => {
+        document.body.removeChild(promptOverlay);
+        resolvePrompt(null);
+    };
+    promptBox.appendChild(cancelButton);
 
-            const promptBox = document.createElement('div');
-            promptBox.className = 'prompt-box';
+    promptOverlay.appendChild(promptBox);
+    document.body.appendChild(promptOverlay);
 
-            const promptText = document.createElement('p');
-            promptText.textContent = 'This product does not have a barcode.\n\nPlease enter the barcode or scan it.';
-            promptBox.appendChild(promptText);
-
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.placeholder = 'Enter barcode';
-            promptBox.appendChild(input);
-
-            const scanButton = document.createElement('button');
-            scanButton.textContent = 'Scan Barcode';
-            scanButton.onclick = () => {
-                scanBarcodeForPrompt(input);
-            };
-            promptBox.appendChild(scanButton);
-
-            const submitButton = document.createElement('button');
-            submitButton.textContent = 'Submit';
-            submitButton.onclick = () => {
-                if (/^[a-zA-Z0-9]+$/.test(input.value)) {
-                    document.body.removeChild(promptOverlay);
-                    resolvePrompt(input.value);
-                } else {
-                    alert('Invalid input. Please enter a valid alphanumeric Barcode.');
-                }
-            };
-            promptBox.appendChild(submitButton);
-
-            const cancelButton = document.createElement('button');
-            cancelButton.textContent = 'Cancel';
-            cancelButton.onclick = () => {
-                document.body.removeChild(promptOverlay);
-                resolvePrompt(null);
-            };
-            promptBox.appendChild(cancelButton);
-
-            promptOverlay.appendChild(promptBox);
-            document.body.appendChild(promptOverlay);
-
-            return new Promise((resolve) => {
-                window.resolvePrompt = resolve;
-            });
-        }
+    return new Promise((resolve) => {
+        window.resolvePrompt = resolve;
+    });
+}
 
         function scanBarcodeForPrompt(input) {
             const codeReader = new ZXing.BrowserBarcodeReader();
