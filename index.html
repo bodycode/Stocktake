@@ -138,6 +138,52 @@
             width: 100%; 
             margin: -80px 0; 
         }
+
+        .prompt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .prompt-box {
+            background-color: #1c1c1c;
+            padding: 20px;
+            border: 2px solid #a89a68;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            color: white;
+        }
+
+        .prompt-box input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .prompt-box button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            border: 2px solid #a89a68;
+            background-color: transparent;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .prompt-box button:hover {
+            background-color: #a89a68;
+            color: #1c1c1c;
+        }
     </style>
 </head>
 <body>
@@ -238,6 +284,9 @@
             });
         }
 
+Certainly! Here's the rest of the code from the `searchTable` function onward, including the styled prompt window and the "Cancel" button:
+
+```javascript
         function searchTable() {
             const input = document.getElementById('searchInput');
             const filter = input.value.toLowerCase();
@@ -314,45 +363,50 @@
         }
 
         function promptForBarcode() {
-            const promptDiv = document.createElement('div');
-            promptDiv.style.position = 'fixed';
-            promptDiv.style.top = '50%';
-            promptDiv.style.left = '50%';
-            promptDiv.style.transform = 'translate(-50%, -50%)';
-            promptDiv.style.backgroundColor = 'white';
-            promptDiv.style.padding = '20px';
-            promptDiv.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
-            promptDiv.style.zIndex = '1000';
+            const promptOverlay = document.createElement('div');
+            promptOverlay.className = 'prompt-overlay';
+
+            const promptBox = document.createElement('div');
+            promptBox.className = 'prompt-box';
 
             const promptText = document.createElement('p');
             promptText.textContent = 'This product does not have a barcode.\n\nPlease enter the barcode or scan it.';
-            promptDiv.appendChild(promptText);
+            promptBox.appendChild(promptText);
 
             const input = document.createElement('input');
             input.type = 'text';
             input.placeholder = 'Enter barcode';
-            promptDiv.appendChild(input);
+            promptBox.appendChild(input);
 
             const scanButton = document.createElement('button');
             scanButton.textContent = 'Scan Barcode';
             scanButton.onclick = () => {
                 scanBarcodeForPrompt(input);
             };
-            promptDiv.appendChild(scanButton);
+            promptBox.appendChild(scanButton);
 
             const submitButton = document.createElement('button');
             submitButton.textContent = 'Submit';
             submitButton.onclick = () => {
                 if (/^[a-zA-Z0-9]+$/.test(input.value)) {
-                    document.body.removeChild(promptDiv);
+                    document.body.removeChild(promptOverlay);
                     resolvePrompt(input.value);
                 } else {
                     alert('Invalid input. Please enter a valid alphanumeric Barcode.');
                 }
             };
-            promptDiv.appendChild(submitButton);
+            promptBox.appendChild(submitButton);
 
-            document.body.appendChild(promptDiv);
+            const cancelButton = document.createElement('button');
+            cancelButton.textContent = 'Cancel';
+            cancelButton.onclick = () => {
+                document.body.removeChild(promptOverlay);
+                resolvePrompt(null);
+            };
+            promptBox.appendChild(cancelButton);
+
+            promptOverlay.appendChild(promptBox);
+            document.body.appendChild(promptOverlay);
 
             return new Promise((resolve) => {
                 window.resolvePrompt = resolve;
