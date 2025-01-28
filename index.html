@@ -6,7 +6,6 @@
     <title>Document</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
-
         body {
             font-family: 'Libre Baskerville', serif;
             margin: 0;
@@ -16,20 +15,18 @@
             align-items: center;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #1c1c1c; 
+            background-color: #1c1c1c;
             position: relative;
         }
-
         .top-wrapper {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 150px; 
+            height: 150px; /* Adjust this height to cover the area above the H1 */
             background-color: black;
             z-index: 1;
         }
-
         h1 {
             font-family: 'Montserrat Hairline', sans-serif;
             color: white;
@@ -37,20 +34,19 @@
             text-align: center;
             text-transform: uppercase;
             font-weight: 700;
-            margin-top: 0px; 
+            margin-top: 0px; /* Adjust this margin to position the H1 correctly */
             font-size: 48px;
             padding: 10px;
-            letter-spacing: 0.05em; 
+            letter-spacing: 0.05em;
             font-stretch: ultra-condensed;
             width: 100%;
             box-sizing: border-box;
             position: relative;
             z-index: 2;
         }
-
         .button {
             display: inline-block;
-            margin: 8px 0; 
+            margin: 8px 0;
             width: 80%;
             padding: 10px 20px;
             font-size: 16px;
@@ -62,29 +58,24 @@
             text-transform: uppercase;
             box-sizing: border-box;
         }
-
         .button::after {
             content: ' →';
             color: #a89a68;
         }
-
         .upload-btn-wrapper {
             width: 100%;
             box-sizing: border-box;
             margin-left: 20%;
         }
-
         .upload-btn-wrapper label {
             width: 100%;
-            display: block; 
+            display: block; /* Changed to block for full width */
             box-sizing: border-box;
-            margin: 0; 
+            margin: 0; /* Removed any margin */
         }
-
         .upload-btn-wrapper input[type="file"] {
             display: none;
         }
-
         input[type="text"], input[type="number"] {
             width: 80%;
             max-width: 800px;
@@ -93,53 +84,44 @@
             font-size: 16px;
             box-sizing: border-box;
         }
-
         table {
-            width: 80%; 
+            width: 80%;
             max-width: 800px;
             border-collapse: collapse;
             margin-top: 20px;
             background-color: white;
         }
-
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
-            word-wrap: break-word; 
+            word-wrap: break-word; /* Ensure text wraps */
         }
-
         th {
             background-color: #a89a68;
             color: #1c1c1c;
         }
-
         tr:nth-child(even) {
-            background-color: #f2f2f2; 
+            background-color: #f2f2f2;
         }
-
         tr:hover {
-            background-color: #ddd; 
+            background-color: #ddd;
         }
-
         .hidden {
             display: none;
         }
-
         .video-wrapper {
-            width: 80%; 
+            width: 80%;
             max-width: 400px;
             overflow: hidden;
             clip-path: inset(33% 0 33% 0);
-            margin: 0px 0; 
+            margin: 0px 0;
         }
-
         video {
             display: block;
-            width: 100%; 
-            margin: -80px 0; 
+            width: 100%;
+            margin: -80px 0;
         }
-
         .prompt-overlay {
             position: fixed;
             top: 0;
@@ -152,7 +134,6 @@
             align-items: center;
             z-index: 1000;
         }
-
         .prompt-box {
             background-color: #1c1c1c;
             padding: 20px;
@@ -161,7 +142,6 @@
             text-align: center;
             color: white;
         }
-
         .prompt-box input {
             width: 80%;
             padding: 10px;
@@ -169,7 +149,6 @@
             font-size: 16px;
             box-sizing: border-box;
         }
-
         .prompt-box button {
             margin: 5px;
             padding: 10px 20px;
@@ -180,17 +159,15 @@
             cursor: pointer;
             text-transform: uppercase;
         }
-
         .prompt-box button:hover {
             background-color: #a89a68;
             color: #1c1c1c;
         }
-
         .barcode-cell {
-            max-width: 10ch; 
-            white-space: pre-wrap; 
-            overflow-wrap: break-word; 
-            word-break: break-word; 
+            max-width: 10ch; /* Limit to 10 characters wide */
+            white-space: pre-wrap; /* Allow text to wrap */
+            overflow-wrap: break-word; /* Break long words */
+            word-break: break-word; /* Ensure words break correctly */
         }
     </style>
 </head>
@@ -215,6 +192,7 @@
     <button id="downloadButton" class="button" onclick="downloadCSV()">Download Count</button>
     <a id="downloadLink" style="display:none;"></a>
     <button class="button" onclick="clearAllData()">CLEAR ALL DATA</button>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script src="https://unpkg.com/@zxing/library@latest"></script>
     <script>
@@ -241,7 +219,6 @@
             const dataBody = document.getElementById('dataBody');
             headerRow.innerHTML = '';
             dataBody.innerHTML = '';
-
             let barcodeIndex = -1;
             let theoryIndex = -1;
 
@@ -276,6 +253,7 @@
                     }
                     tr.appendChild(td);
                 });
+
                 const inputTd = document.createElement('td');
                 const input = document.createElement('input');
                 input.type = 'number';
@@ -284,12 +262,18 @@
                 inputTd.appendChild(input);
                 tr.appendChild(inputTd);
                 dataBody.appendChild(tr);
-
-                //[_{{{CITATION{{{_1{](https://github.com/buribalazs/smooth-drag-order/tree/7b40d21d076c3e31765f61481f537beaf4c5ec9f/README.md)[_{{{CITATION{{{_2{](https://github.com/lzh-yi/Web-Fork-/tree/024b3e55587afdf9f05a677613a75f24e3d1803e/03-CSS%E8%BF%9B%E9%98%B6%2F04-%E5%A6%82%E4%BD%95%E8%AE%A9%E4%B8%80%E4%B8%AA%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD%EF%BC%9F.md)[_{{{CITATION{{{_3{](https://github.com/AviArya987/Get-IT-Project/tree/7abd1d97f9b84860311f2a808c7da6a97adfbace/student%2Fpartials%2Fmenu.php)[_{{{CITATION{{{_4{](https://github.com/vivektangudu2024/stakekar/tree/9fdc8bff1e8249e41debd24e13d6272875485dbc/files%2Fuserhai.php)[_{{{CITATION{{{_5{](https://github.com/patrickaviel/view_exercises_ci/tree/3c4684ab5be0f18b7542e019bfcff1b54e38b018/application%2Fviews%2Fnew.php)[_{{{CITATION{{{_6{](https://github.com/adamkss/quizio/tree/a942be78dedcf83f03cd28b4190e84638f857603/components%2FGenericDailog.js)
                 // Load saved input value if available
                 const savedInputValue = localStorage.getItem(`inputValue_${rowIndex}`);
                 if (savedInputValue) {
                     input.value = savedInputValue;
+                }
+
+                // Load saved barcode if available
+                const savedBarcode = localStorage.getItem(`barcode_${rowIndex}`);
+                if (savedBarcode) {
+                    const barcodeCell = tr.getElementsByTagName('td')[barcodeIndex];
+                    barcodeCell.textContent = savedBarcode;
+                    barcodeCell.classList.add('barcode-cell');
                 }
 
                 // Save input value on change
@@ -297,14 +281,6 @@
                     localStorage.setItem(`inputValue_${rowIndex}`, input.value);
                     checkBarcode(rowIndex, input.value);
                 });
-
-                // Save the barcode cell content on change
-                const barcodeCell = row.getElementsByTagName('td')[barcodeIndex];
-                if (barcodeCell) {
-                    barcodeCell.addEventListener('input', () => {
-                        localStorage.setItem(`barcodeValue_${rowIndex}`, barcodeCell.textContent);
-                    });
-                }
             });
         }
 
@@ -336,7 +312,6 @@
         function downloadCSV() {
             const rows = document.getElementById('dataBody').getElementsByTagName('tr');
             const csvData = [];
-
             Array.from(rows).forEach(row => {
                 const cells = row.getElementsByTagName('td');
                 const firstCell = cells[0] ? cells[0].textContent : '';
@@ -346,7 +321,6 @@
                     csvData.push([barcodeCell, actualCell].join(','));
                 }
             });
-
             const csvContent = csvData.join('\n');
             const blob = new Blob([csvContent], { type: 'text/plain;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
@@ -368,29 +342,19 @@
             if (tableData) {
                 populateTable(tableData);
             }
-
-            // Load saved barcode values
-            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
-            Array.from(rows).forEach((row, rowIndex) => {
-                const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
-                const savedBarcodeValue = localStorage.getItem(`barcodeValue_${rowIndex}`);
-                if (savedBarcodeValue) {
-                    barcodeCell.textContent = savedBarcodeValue;
-                }
-            });
         }
 
         function checkBarcode(rowIndex, inputValue) {
             const rows = document.getElementById('dataBody').getElementsByTagName('tr');
             const row = rows[rowIndex];
             const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
-
             if (inputValue !== '' && barcodeCell.textContent === '') {
                 promptForBarcode().then(barcode => {
                     if (barcode !== null) {
-                        barcodeCell.textContent = barcode; // Do not truncate, allow wrapping
-                        barcodeCell.classList.add('barcode-cell'); // Add class for wrapping
-                        localStorage.setItem(`barcodeValue_${rowIndex}`, barcode);
+                        barcodeCell.textContent = barcode;
+                        barcodeCell.classList.add('barcode-cell');
+                        // Save the barcode locally
+                        localStorage.setItem(`barcode_${rowIndex}`, barcode);
                     }
                 });
             }
@@ -399,26 +363,21 @@
         function promptForBarcode() {
             const promptOverlay = document.createElement('div');
             promptOverlay.className = 'prompt-overlay';
-
             const promptBox = document.createElement('div');
             promptBox.className = 'prompt-box';
-
             const promptText = document.createElement('p');
             promptText.textContent = 'This product does not have a barcode.\n\nPlease enter the barcode or scan it.';
             promptBox.appendChild(promptText);
-
             const input = document.createElement('input');
             input.type = 'text';
             input.placeholder = 'Enter barcode';
             promptBox.appendChild(input);
-
             const scanButton = document.createElement('button');
             scanButton.textContent = 'Scan Barcode';
             scanButton.onclick = () => {
                 scanBarcodeForPrompt(input);
             };
             promptBox.appendChild(scanButton);
-
             const submitButton = document.createElement('button');
             submitButton.textContent = 'Submit';
             submitButton.onclick = () => {
@@ -430,7 +389,6 @@
                 }
             };
             promptBox.appendChild(submitButton);
-
             const cancelButton = document.createElement('button');
             cancelButton.textContent = 'Cancel';
             cancelButton.onclick = () => {
@@ -438,10 +396,8 @@
                 resolvePrompt(null);
             };
             promptBox.appendChild(cancelButton);
-
             promptOverlay.appendChild(promptBox);
             document.body.appendChild(promptOverlay);
-
             return new Promise((resolve) => {
                 window.resolvePrompt = resolve;
             });
