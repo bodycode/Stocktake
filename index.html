@@ -185,6 +185,12 @@
             background-color: #a89a68;
             color: #1c1c1c;
         }
+
+        .barcode-cell {
+            max-width: 10ch; /* Limit to 10 characters */
+            white-space: pre-wrap; /* Allow text to wrap */
+            overflow-wrap: break-word; /* Break long words */
+        }
     </style>
 </head>
 <body>
@@ -263,7 +269,8 @@
                     if (index === theoryIndex) {
                         td.textContent = parseFloat(cell).toFixed(1); // Format to 1 decimal place
                     } else if (index === barcodeIndex) {
-                        td.textContent = cell.length > 15 ? cell.slice(0, 15) + '...' : cell; // Limit to 15 characters
+                        td.textContent = cell.length > 10 ? cell.slice(0, 10) + '...' : cell; // Limit to 10 characters
+                        td.classList.add('barcode-cell'); // Add class for wrapping
                     } else {
                         td.textContent = cell;
                     }
@@ -277,6 +284,7 @@
                 inputTd.appendChild(input);
                 tr.appendChild(inputTd);
                 dataBody.appendChild(tr);
+
                 // Load saved input value if available
                 const savedInputValue = localStorage.getItem(`inputValue_${rowIndex}`);
                 if (savedInputValue) {
@@ -361,7 +369,8 @@
             if (inputValue !== '' && barcodeCell.textContent === '') {
                 promptForBarcode().then(barcode => {
                     if (barcode !== null) {
-                        barcodeCell.textContent = barcode.length > 15 ? barcode.slice(0, 15) + '...' : barcode; // Limit to 15 characters
+                        barcodeCell.textContent = barcode.length > 10 ? barcode.slice(0, 10) + '...' : barcode; // Limit to 10 characters
+                        barcodeCell.classList.add('barcode-cell'); // Add class for wrapping
                     }
                 });
             }
