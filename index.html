@@ -6,7 +6,7 @@
     <title>Document</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
-
+        
         body {
             font-family: 'Libre Baskerville', serif;
             margin: 0;
@@ -25,7 +25,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 150px; 
+            height: 150px;
             background-color: black;
             z-index: 1;
         }
@@ -37,10 +37,10 @@
             text-align: center;
             text-transform: uppercase;
             font-weight: 700;
-            margin-top: 0px; 
+            margin-top: 0px;
             font-size: 48px;
             padding: 10px;
-            letter-spacing: 0.05em; 
+            letter-spacing: 0.05em;
             font-stretch: ultra-condensed;
             width: 100%;
             box-sizing: border-box;
@@ -50,7 +50,7 @@
 
         .button {
             display: inline-block;
-            margin: 8px 0; 
+            margin: 8px 0;
             width: 80%;
             padding: 10px 20px;
             font-size: 16px;
@@ -76,9 +76,9 @@
 
         .upload-btn-wrapper label {
             width: 100%;
-            display: block; 
+            display: block;
             box-sizing: border-box;
-            margin: 0; 
+            margin: 0;
         }
 
         .upload-btn-wrapper input[type="file"] {
@@ -95,7 +95,7 @@
         }
 
         table {
-            width: 80%; 
+            width: 80%;
             max-width: 800px;
             border-collapse: collapse;
             margin-top: 20px;
@@ -106,7 +106,7 @@
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
-            word-wrap: break-word; 
+            word-wrap: break-word;
         }
 
         th {
@@ -115,11 +115,11 @@
         }
 
         tr:nth-child(even) {
-            background-color: #f2f2f2; 
+            background-color: #f2f2f2;
         }
 
         tr:hover {
-            background-color: #ddd; 
+            background-color: #ddd;
         }
 
         .hidden {
@@ -127,17 +127,17 @@
         }
 
         .video-wrapper {
-            width: 80%; 
+            width: 80%;
             max-width: 400px;
             overflow: hidden;
             clip-path: inset(33% 0 33% 0);
-            margin: 0px 0; 
+            margin: 0px 0;
         }
 
         video {
             display: block;
-            width: 100%; 
-            margin: -80px 0; 
+            width: 100%;
+            margin: -80px 0;
         }
 
         .prompt-overlay {
@@ -187,10 +187,10 @@
         }
 
         .barcode-cell {
-            max-width: 10ch; 
-            white-space: pre-wrap; 
-            overflow-wrap: break-word; 
-            word-break: break-word; 
+            max-width: 10ch;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
     </style>
 </head>
@@ -267,10 +267,10 @@
                 row.forEach((cell, index) => {
                     const td = document.createElement('td');
                     if (index === theoryIndex) {
-                        td.textContent = parseFloat(cell).toFixed(1); 
+                        td.textContent = parseFloat(cell).toFixed(1); // Format to 1 decimal place
                     } else if (index === barcodeIndex) {
-                        td.textContent = cell; 
-                        td.classList.add('barcode-cell'); 
+                        td.textContent = cell; // Do not truncate, allow wrapping
+                        td.classList.add('barcode-cell'); // Add class for wrapping
                     } else {
                         td.textContent = cell;
                     }
@@ -280,13 +280,13 @@
                 const input = document.createElement('input');
                 input.type = 'number';
                 input.classList.add('Actual');
-                input[_{{{CITATION{{{_1{](https://github.com/lzh-yi/Web-Fork-/tree/024b3e55587afdf9f05a677613a75f24e3d1803e/03-CSS%E8%BF%9B%E9%98%B6%2F04-%E5%A6%82%E4%BD%95%E8%AE%A9%E4%B8%80%E4%B8%AA%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD%EF%BC%9F.md)[_{{{CITATION{{{_2{](https://github.com/AviArya987/Get-IT-Project/tree/7abd1d97f9b84860311f2a808c7da6a97adfbace/student%2Fpartials%2Fmenu.php)[_{{{CITATION{{{_3{](https://github.com/vivektangudu2024/stakekar/tree/9fdc8bff1e8249e41debd24e13d6272875485dbc/files%2Fuserhai.php)[_{{{CITATION{{{_4{](https://github.com/patrickaviel/view_exercises_ci/tree/3c4684ab5be0f18b7542e019bfcff1b54e38b018/application%2Fviews%2Fnew.php)[_{{{CITATION{{{_5{](https://github.com/adamkss/quizio/tree/a942be78dedcf83f03cd28b4190e84638f857603/components%2FGenericDailog.js)
-                input.step = '0.1'; 
+                input.step = '0.1'; // Allow 1 decimal point
                 inputTd.appendChild(input);
                 tr.appendChild(inputTd);
                 dataBody.appendChild(tr);
 
                 // Load saved input value if available
+[_{{{CITATION{{{_1{](https://github.com/buribalazs/smooth-drag-order/tree/7b40d21d076c3e31765f61481f537beaf4c5ec9f/README.md)[_{{{CITATION{{{_2{](https://github.com/lzh-yi/Web-Fork-/tree/024b3e55587afdf9f05a677613a75f24e3d1803e/03-CSS%E8%BF%9B%E9%98%B6%2F04-%E5%A6%82%E4%BD%95%E8%AE%A9%E4%B8%80%E4%B8%AA%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD%EF%BC%9F.md)[_{{{CITATION{{{_3{](https://github.com/AviArya987/Get-IT-Project/tree/7abd1d97f9b84860311f2a808c7da6a97adfbace/student%2Fpartials%2Fmenu.php)[_{{{CITATION{{{_4{](https://github.com/vivektangudu2024/stakekar/tree/9fdc8bff1e8249e41debd24e13d6272875485dbc/files%2Fuserhai.php)[_{{{CITATION{{{_5{](https://github.com/patrickaviel/view_exercises_ci/tree/3c4684ab5be0f18b7542e019bfcff1b54e38b018/application%2Fviews%2Fnew.php)[_{{{CITATION{{{_6{](https://github.com/adamkss/quizio/tree/a942be78dedcf83f03cd28b4190e84638f857603/components%2FGenericDailog.js)
                 const savedInputValue = localStorage.getItem(`inputValue_${rowIndex}`);
                 if (savedInputValue) {
                     input.value = savedInputValue;
@@ -299,7 +299,7 @@
                 });
 
                 // Save the barcode cell content on change
-                const barcodeCell = row[barcodeIndex];
+                const barcodeCell = row.getElementsByTagName('td')[barcodeIndex];
                 if (barcodeCell) {
                     barcodeCell.addEventListener('input', () => {
                         localStorage.setItem(`barcodeValue_${rowIndex}`, barcodeCell.textContent);
@@ -467,4 +467,3 @@
     </script>
 </body>
 </html>
-                          
