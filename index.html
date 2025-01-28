@@ -6,7 +6,7 @@
     <title>Document</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
-        
+
         body {
             font-family: 'Libre Baskerville', serif;
             margin: 0;
@@ -25,7 +25,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 150px; /* Adjust this height to cover the area above the H1 */
+            height: 150px; 
             background-color: black;
             z-index: 1;
         }
@@ -37,7 +37,7 @@
             text-align: center;
             text-transform: uppercase;
             font-weight: 700;
-            margin-top: 0px; /* Adjust this margin to position the H1 correctly */
+            margin-top: 0px; 
             font-size: 48px;
             padding: 10px;
             letter-spacing: 0.05em; 
@@ -76,9 +76,9 @@
 
         .upload-btn-wrapper label {
             width: 100%;
-            display: block; /* Changed to block for full width */
+            display: block; 
             box-sizing: border-box;
-            margin: 0; /* Removed any margin */
+            margin: 0; 
         }
 
         .upload-btn-wrapper input[type="file"] {
@@ -106,7 +106,7 @@
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
-            word-wrap: break-word; /* Ensure text wraps */
+            word-wrap: break-word; 
         }
 
         th {
@@ -187,10 +187,10 @@
         }
 
         .barcode-cell {
-            max-width: 10ch; /* Limit to 10 characters wide */
-            white-space: pre-wrap; /* Allow text to wrap */
-            overflow-wrap: break-word; /* Break long words */
-            word-break: break-word; /* Ensure words break correctly */
+            max-width: 10ch; 
+            white-space: pre-wrap; 
+            overflow-wrap: break-word; 
+            word-break: break-word; 
         }
     </style>
 </head>
@@ -215,7 +215,6 @@
     <button id="downloadButton" class="button" onclick="downloadCSV()">Download Count</button>
     <a id="downloadLink" style="display:none;"></a>
     <button class="button" onclick="clearAllData()">CLEAR ALL DATA</button>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script src="https://unpkg.com/@zxing/library@latest"></script>
     <script>
@@ -268,20 +267,20 @@
                 row.forEach((cell, index) => {
                     const td = document.createElement('td');
                     if (index === theoryIndex) {
-                        td.textContent = parseFloat(cell).toFixed(1); // Format to 1 decimal place
+                        td.textContent = parseFloat(cell).toFixed(1); 
                     } else if (index === barcodeIndex) {
-                        td.textContent = cell; // Do not truncate, allow wrapping
-                        td.classList.add('barcode-cell'); // Add class for wrapping
+                        td.textContent = cell; 
+                        td.classList.add('barcode-cell'); 
                     } else {
                         td.textContent = cell;
                     }
                     tr.appendChild(td);
                 });
                 const inputTd = document.createElement('td');
-                 const input = document.createElement('input');
+                const input = document.createElement('input');
                 input.type = 'number';
                 input.classList.add('Actual');
-                input.step = '0.1'; // Allow 1 decimal point
+                input.step = '0.1'; 
                 inputTd.appendChild(input);
                 tr.appendChild(inputTd);
                 dataBody.appendChild(tr);
@@ -297,6 +296,14 @@
                     localStorage.setItem(`inputValue_${rowIndex}`, input.value);
                     checkBarcode(rowIndex, input.value);
                 });
+
+                // Save the barcode cell content on change
+                const barcodeCell = row[barcodeIndex];
+                if (barcodeCell) {
+                    barcodeCell.addEventListener('input', () => {
+                        localStorage.setItem(`barcodeValue_${rowIndex}`, barcodeCell.textContent);
+                    });
+                }
             });
         }
 
@@ -360,6 +367,16 @@
             if (tableData) {
                 populateTable(tableData);
             }
+
+            // Load saved barcode values
+            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
+            Array.from(rows).forEach((row, rowIndex) => {
+                const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
+                const savedBarcodeValue = localStorage.getItem(`barcodeValue_${rowIndex}`);
+                if (savedBarcodeValue) {
+                    barcodeCell.textContent = savedBarcodeValue;
+                }
+            });
         }
 
         function checkBarcode(rowIndex, inputValue) {
@@ -372,6 +389,7 @@
                     if (barcode !== null) {
                         barcodeCell.textContent = barcode; // Do not truncate, allow wrapping
                         barcodeCell.classList.add('barcode-cell'); // Add class for wrapping
+                        localStorage.setItem(`barcodeValue_${rowIndex}`, barcode);
                     }
                 });
             }
