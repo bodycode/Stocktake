@@ -5,19 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
-        body {
-            font-family: 'Libre Baskerville', serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            min-height: 100vh;
-            background-color: #1c1c1c;
-            position: relative;
-        }
+        /* Existing styles */
+
         .top-wrapper {
             position: absolute;
             top: 0;
@@ -210,6 +199,7 @@
                 const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
                 populateTable(jsonData);
                 saveTableData(jsonData);
+                alert('File uploaded successfully.'); // Provide feedback to the user
             };
             reader.readAsArrayBuffer(file);
         }
@@ -256,6 +246,9 @@
 
                 const inputTd = document.createElement('td');
                 const input = document.createElement('input');
+                input.type = 'text';
+                input.style.width = '4ch'; // Display only 4 characters wide
+                input.maxLength = 10; // Allow up to 10 characters to be entered
                 input.step = '0.1'; // Allow 1 decimal point
                 inputTd.appendChild(input);
                 tr.appendChild(inputTd);
@@ -345,6 +338,7 @@
             const tableData = JSON.parse(localStorage.getItem('tableData'));
             if (tableData) {
                 populateTable(tableData);
+                alert('Data loaded successfully.'); // Provide feedback to the user
             }
         }
 
@@ -375,6 +369,8 @@
             const input = document.createElement('input');
             input.type = 'text';
             input.placeholder = 'Enter barcode';
+            input.style.width = '4ch'; // Display only 4 characters wide
+            input.maxLength = 10; // Allow up to 10 characters to be entered
             promptBox.appendChild(input);
             const scanButton = document.createElement('button');
             scanButton.textContent = 'Scan Barcode';
@@ -390,6 +386,7 @@
                     resolvePrompt(input.value);
                 } else {
                     alert('Invalid input. Please enter a valid alphanumeric Barcode.');
+                    input.style.borderColor = 'red'; // Highlight the input box in red
                 }
             };
             promptBox.appendChild(submitButton);
