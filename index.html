@@ -15,7 +15,7 @@
             align-items: center;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #1c1c1c; /* Ensuring background is dark */
+            background-color: #1c1c1c;
             position: relative;
         }
         .top-wrapper {
@@ -47,6 +47,7 @@
         .button {
             display: inline-block;
             margin: 8px 0;
+            width: 80%;
             padding: 10px 20px;
             font-size: 16px;
             color: white;
@@ -209,7 +210,6 @@
                 const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
                 populateTable(jsonData);
                 saveTableData(jsonData);
-                alert('File uploaded successfully.'); // Provide feedback to the user
             };
             reader.readAsArrayBuffer(file);
         }
@@ -237,7 +237,8 @@
             const th = document.createElement('th');
             th.textContent = 'Actual';
             headerRow.appendChild(th);
-        // Create data rows
+                    
+            // Create data rows
         data.slice(1).forEach((row, rowIndex) => {
             const tr = document.createElement('tr');
             row.forEach((cell, index) => {
@@ -347,7 +348,6 @@
         const tableData = JSON.parse(localStorage.getItem('tableData'));
         if (tableData) {
             populateTable(tableData);
-            alert('Data loaded successfully.'); // Provide feedback to the user
         }
     }
 
