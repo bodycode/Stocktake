@@ -257,7 +257,7 @@
             const inputTd = document.createElement('td');
             const input = document.createElement('input');
             input.type = 'text';
-            input.style.width = '4ch'; // Display only 4 characters wide
+            input.style.width = '6ch'; // Display only 6 characters wide
             input.maxLength = 10; // Allow up to 10 characters to be entered
             input.step = '0.1'; // Allow 1 decimal point
             inputTd.appendChild(input);
@@ -378,8 +378,6 @@
         const input = document.createElement('input');
         input.type = 'text';
         input.placeholder = 'Enter barcode';
-        input.style.width = '6ch'; // Display only 6 characters wide
-        input.maxLength = 10; // Allow up to 10 characters to be entered
         promptBox.appendChild(input);
         const scanButton = document.createElement('button');
         scanButton.textContent = 'Scan Barcode';
