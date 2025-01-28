@@ -187,9 +187,10 @@
         }
 
         .barcode-cell {
-            max-width: 10ch; /* Limit to 10 characters */
+            max-width: 10ch; /* Limit to 10 characters wide */
             white-space: pre-wrap; /* Allow text to wrap */
             overflow-wrap: break-word; /* Break long words */
+            word-break: break-word; /* Ensure words break correctly */
         }
     </style>
 </head>
@@ -269,7 +270,7 @@
                     if (index === theoryIndex) {
                         td.textContent = parseFloat(cell).toFixed(1); // Format to 1 decimal place
                     } else if (index === barcodeIndex) {
-                        td.textContent = cell.length > 10 ? cell.slice(0, 10) + '...' : cell; // Limit to 10 characters
+                        td.textContent = cell; // Do not truncate, allow wrapping
                         td.classList.add('barcode-cell'); // Add class for wrapping
                     } else {
                         td.textContent = cell;
@@ -277,7 +278,7 @@
                     tr.appendChild(td);
                 });
                 const inputTd = document.createElement('td');
-                const input = document.createElement('input');
+                 const input = document.createElement('input');
                 input.type = 'number';
                 input.classList.add('Actual');
                 input.step = '0.1'; // Allow 1 decimal point
@@ -369,7 +370,7 @@
             if (inputValue !== '' && barcodeCell.textContent === '') {
                 promptForBarcode().then(barcode => {
                     if (barcode !== null) {
-                        barcodeCell.textContent = barcode.length > 10 ? barcode.slice(0, 10) + '...' : barcode; // Limit to 10 characters
+                        barcodeCell.textContent = barcode; // Do not truncate, allow wrapping
                         barcodeCell.classList.add('barcode-cell'); // Add class for wrapping
                     }
                 });
