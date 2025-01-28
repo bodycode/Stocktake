@@ -262,6 +262,7 @@
                 inputTd.appendChild(input);
                 tr.appendChild(inputTd);
                 dataBody.appendChild(tr);
+
                 // Load saved input value if available
                 const savedInputValue = localStorage.getItem(`inputValue_${rowIndex}`);
                 if (savedInputValue) {
@@ -276,10 +277,15 @@
                     barcodeCell.classList.add('barcode-cell');
                 }
 
-                // Save input value on change
+                // Save input value on change with validation
                 input.addEventListener('input', () => {
-                    localStorage.setItem(`inputValue_${rowIndex}`, input.value);
-                    checkBarcode(rowIndex, input.value);
+                    // Validate the input to allow only numbers and decimals
+                    if (/^\d*\.?\d*$/.test(input.value)) {
+                        localStorage.setItem(`inputValue_${rowIndex}`, input.value);
+                        checkBarcode(rowIndex, input.value);
+                    } else {
+                        input.value = input.value.slice(0, -1); // Remove the last character if invalid
+                    }
                 });
             });
         }
