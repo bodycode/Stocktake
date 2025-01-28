@@ -229,62 +229,65 @@
             reader.readAsArrayBuffer(file);
         }
 
-        function populateTable(data) {
-            const headerRow = document.getElementById('headerRow');
-            const dataBody = document.getElementById('dataBody');
-            headerRow.innerHTML = '';
-            dataBody.innerHTML = '';
+       function populateTable(data) {
+    const headerRow = document.getElementById('headerRow');
+    const dataBody = document.getElementById('dataBody');
+    headerRow.innerHTML = '';
+    dataBody.innerHTML = '';
 
-            let barcodeIndex = -1;
-            let theoryIndex = -1;
+    let barcodeIndex = -1;
+    let theoryIndex = -1;
 
-            // Create header row
-            data[0].forEach((header, index) => {
-                const th = document.createElement('th');
-                th.textContent = header;
-                if (header.toLowerCase() === 'barcode') {
-                    barcodeIndex = index;
-                }
-                if (header.toLowerCase() === 'theory') {
-                    theoryIndex = index;
-                }
-                headerRow.appendChild(th);
-            });
-            const th = document.createElement('th');
-            th.textContent = 'Actual';
-            headerRow.appendChild(th);
+    // Create header row
+    data[0].forEach((header, index) => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        if (header.toLowerCase() === 'barcode') {
+            barcodeIndex = index;
+        }
+        if (header.toLowerCase() === 'theory') {
+            theoryIndex = index;
+        }
+        headerRow.appendChild(th);
+    });
+    const th = document.createElement('th');
+    th.textContent = 'Actual';
+    headerRow.appendChild(th);
 
-            // Create data rows
-            data.slice(1).forEach((row, rowIndex) => {
-                const tr = document.createElement('tr');
-                row.forEach((cell, index) => {
-                    const td = document.createElement('td');
-                    td.textContent = cell;
-                    tr.appendChild(td);
-                });
-                const inputTd = document.createElement('td');
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.classList.add('Actual');
-                input.step = '0.1'; // Allow 1 decimal point
-                inputTd.appendChild(input);
-                tr.appendChild(inputTd);
-                dataBody.appendChild(tr);
+    // Create data rows
+    data.slice(1).forEach((row, rowIndex) => {
+        const tr = document.createElement('tr');
+        row.forEach((cell, index) => {
+            const td = document.createElement('td');
+            if (index === theoryIndex) {
+                td.textContent = parseFloat(cell).toFixed(1); // Format to 1 decimal place
+            } else {
+                td.textContent = cell;
+            }
+            tr.appendChild(td);
+        });
+        const inputTd = document.createElement('td');
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.classList.add('Actual');
+        input.step = '0.1'; // Allow 1 decimal point
+        inputTd.appendChild(input);
+        tr.appendChild(inputTd);
+        dataBody.appendChild(tr);
 
-                // Load saved input value if available
-                const savedInputValue = localStorage.getItem(`inputValue_${rowIndex}`);
-                if (savedInputValue) {
-                    input.value = savedInputValue;
-                }
-
-                // Save input value on change
-                input.addEventListener('input', () => {
-                    localStorage.setItem(`inputValue_${rowIndex}`, input.value);
-                    checkBarcode(rowIndex, input.value);
-                });
-            });
+        // Load saved input value if available
+        const savedInputValue = localStorage.getItem(`inputValue_${rowIndex}`);
+        if (savedInputValue) {
+            input.value = savedInputValue;
         }
 
+        // Save input value on change
+        input.addEventListener('input', () => {
+            localStorage.setItem(`inputValue_${rowIndex}`, input.value);
+            checkBarcode(rowIndex, input.value);
+        });
+    });
+}
         function searchTable() {
             const input = document.getElementById('searchInput');
             const filter = input.value.toLowerCase();
