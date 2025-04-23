@@ -321,13 +321,12 @@
         const csvData = [];
         Array.from(rows).forEach(row => {
             const cells = row.getElementsByTagName('td');
-            const firstCell = cells[0] ? cells[0].textContent : '';
-            if (firstCell.toLowerCase() !== 'totals:') {
-                const barcodeCell = cells[1] ? cells[1].textContent : ''; // 'Barcode' is the second column
-                const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
-                csvData.push([barcodeCell, actualCell].join(','));
+            const barcodeCell = cells[1] ? cells[1].textContent.trim() : ''; // Trim whitespace
+            const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0]?.value.trim() || ''; // Trim whitespace
+            if (barcodeCell && actualCell) {
+                csvData.push(`${barcodeCell},${actualCell}`); // Ensure they're combined on a single line
             }
-        });
+          });
         const csvContent = csvData.join('\n');
         const blob = new Blob([csvContent], { type: 'text/plain;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
