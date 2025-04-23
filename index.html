@@ -304,9 +304,11 @@
                 }
 
                 // Save input value on change - use original row index for localStorage key
+                // Capture the current displayRowIndex for this row
+                const currentDisplayIndex = displayRowIndex;
                 input.addEventListener('input', () => {
                     localStorage.setItem(`inputValue_${originalRowIndex}`, input.value);
-                    checkBarcode(displayRowIndex, input.value, originalRowIndex);
+                    checkBarcode(currentDisplayIndex, input.value, originalRowIndex);
                 });
                 
                 displayRowIndex++; // Increment the displayed row counter
@@ -433,19 +435,24 @@
             }
         }
 
-        function checkBarcode(rowIndex, inputValue, originalRowIndex) {
+        // Update the checkBarcode function to work correctly with the new row indexing
+        function checkBarcode(displayRowIndex, inputValue, originalRowIndex) {
             const rows = document.getElementById('dataBody').getElementsByTagName('tr');
-            const row = rows[rowIndex];
-            const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
-            if (inputValue !== '' && barcodeCell.textContent === '') {
-                promptForBarcode().then(barcode => {
-                    if (barcode !== null) {
-                        barcodeCell.textContent = barcode;
-                        barcodeCell.classList.add('barcode-cell');
-                        // Save the barcode locally using the original row index
-                        localStorage.setItem(`barcode_${originalRowIndex}`, barcode);
-                    }
-                });
+            // Make sure we have this row at the expected position
+            if (displayRowIndex < rows.length) {
+                const row = rows[displayRowIndex];
+                const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
+                
+                if (inputValue !== '' && (!barcodeCell.textContent || barcodeCell.textContent.trim() === '')) {
+                    promptForBarcode().then(barcode => {
+                        if (barcode !== null) {
+                            barcodeCell.textContent = barcode;
+                            barcodeCell.classList.add('barcode-cell');
+                            // Save the barcode locally using the original row index
+                            localStorage.setItem(`barcode_${originalRowIndex}`, barcode);
+                        }
+                    });
+                }
             }
         }
 
