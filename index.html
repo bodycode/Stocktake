@@ -110,23 +110,23 @@
         .hidden {
             display: none;
         }
-        .barcode-cell {
-            max-width: 10ch;
-            white-space: pre-wrap;
-            overflow-wrap: break-word;
-            word-break: break-word;
-        }
         .video-wrapper {
             width: 80%;
             max-width: 400px;
             overflow: hidden;
             clip-path: inset(33% 0 33% 0);
-            margin: 20px 0;
+            margin: 0px 0;
         }
         video {
             display: block;
             width: 100%;
             margin: -80px 0;
+        }
+        .barcode-cell {
+            max-width: 10ch;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
     </style>
 </head>
@@ -151,6 +151,7 @@
     <button id="downloadButton" class="button" onclick="downloadCSV()">Download Count</button>
     <a id="downloadLink" style="display:none;"></a>
     <button class="button" onclick="clearAllData()">CLEAR ALL DATA</button>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script src="https://unpkg.com/@zxing/library@latest"></script>
     <script>
@@ -239,7 +240,9 @@
                 const cells = row.getElementsByTagName('td');
                 const barcodeCell = cells[1] ? cells[1].textContent.trim() : ''; // Trim whitespace
                 const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value.trim(); // Trim whitespace
-                csvData.push([barcodeCell, actualCell].join(',')); // Join without extra spaces or newlines
+                if (barcodeCell && actualCell) {
+                    csvData.push(`${barcodeCell},${actualCell}`); // Ensure both values are on the same line
+                }
             });
             const csvContent = csvData.join('\n'); // Ensure each entry is on a new line
             const blob = new Blob([csvContent], { type: 'text/plain;charset=utf-8;' });
