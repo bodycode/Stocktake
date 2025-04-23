@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Stocktake Buddy</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
         body {
@@ -116,6 +116,18 @@
             overflow-wrap: break-word;
             word-break: break-word;
         }
+        .video-wrapper {
+            width: 80%;
+            max-width: 400px;
+            overflow: hidden;
+            clip-path: inset(33% 0 33% 0);
+            margin: 20px 0;
+        }
+        video {
+            display: block;
+            width: 100%;
+            margin: -80px 0;
+        }
     </style>
 </head>
 <body>
@@ -125,6 +137,11 @@
         <button class="button" onclick="document.getElementById('fileInput').click()">Upload CSV file</button>
         <input type="file" id="fileInput" accept=".xlsx, .xls" onchange="handleFile(event)">
     </div>
+    <div class="video-wrapper">
+        <video id="video"></video>
+    </div>
+    <button id="scanButton" class="button" onclick="scanBarcode()">Scan Barcode</button>
+    <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()">
     <table id="dataGrid">
         <thead>
             <tr id="headerRow"></tr>
@@ -133,8 +150,14 @@
     </table>
     <button id="downloadButton" class="button" onclick="downloadCSV()">Download Count</button>
     <a id="downloadLink" style="display:none;"></a>
+    <button class="button" onclick="clearAllData()">CLEAR ALL DATA</button>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            loadTableData();
+        });
+
         function handleFile(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
@@ -144,6 +167,7 @@
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                 const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
                 populateTable(jsonData);
+                saveTableData(jsonData);
             };
             reader.readAsArrayBuffer(file);
         }
@@ -183,6 +207,31 @@
             });
         }
 
+        function searchTable() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
+            Array.from(rows).forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                let match = false;
+                Array.from(cells).forEach(cell => {
+                    if (cell.textContent.toLowerCase().indexOf(filter) > -1) {
+                        match = true;
+                    }
+                });
+                row.style.display = match ? '' : 'none';
+            });
+        }
+
+        function scanBarcode() {
+            document.getElementById('searchInput').value = '';
+            const codeReader = new ZXing.BrowserBarcodeReader();
+            codeReader.decodeOnceFromVideoDevice(undefined, 'video').then(result => {
+                document.getElementById('searchInput').value = result.text;
+                searchTable();
+            }).catch(err => console.error(err));
+        }
+
         function downloadCSV() {
             const rows = document.getElementById('dataBody').getElementsByTagName('tr');
             const csvData = [];
@@ -202,6 +251,28 @@
             downloadLink.click();
             downloadLink.style.display = 'none';
             URL.revokeObjectURL(url);
+        }
+
+        function saveTableData(data) {
+            localStorage.setItem('tableData', JSON.stringify(data));
+        }
+
+        function loadTableData() {
+            const tableData = JSON.parse(localStorage.getItem('tableData'));
+            if (tableData) {
+                populateTable(tableData);
+            }
+        }
+
+        function clearAllData() {
+            const confirmation = confirm('You are about to clear all data. \n\nDo you wish to continue?');
+            if (confirmation) {
+                localStorage.removeItem('tableData');
+                localStorage.clear();
+                document.getElementById('headerRow').innerHTML = '';
+                document.getElementById('dataBody').innerHTML = '';
+                alert('All data has been cleared.');
+            }
         }
     </script>
 </body>
