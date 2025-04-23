@@ -175,7 +175,8 @@
 
                 const inputTd = document.createElement('td');
                 const input = document.createElement('input');
-                input.type = 'text';
+                input.type = 'number'; // Ensure numeric keyboard
+                input.step = '0.1'; // Allow decimal values
                 inputTd.appendChild(input);
                 tr.appendChild(inputTd);
                 dataBody.appendChild(tr);
