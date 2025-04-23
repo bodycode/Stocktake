@@ -255,23 +255,28 @@
             
             // Create data rows - filter out any "Totals:" rows
             let displayRowIndex = 0; // Track the actual displayed row index
+            let skippedRows = 0; // Track how many rows we skipped
             
             data.slice(1).forEach((row, originalRowIndex) => {
+                const dataRowIndex = originalRowIndex; // This is the actual index in the data array
+                
                 // Skip rows where the first cell is "Totals:"
                 if (row[0] && String(row[0]).toLowerCase().trim() === 'totals:') {
+                    skippedRows++;
                     return; // Skip this row
                 }
                 
                 const tr = document.createElement('tr');
                 // Store the original data row index as a data attribute
-                tr.dataset.originalIndex = originalRowIndex;
+                tr.dataset.originalIndex = dataRowIndex;
                 
-                row.forEach((cell, index) => {
+                row.forEach((cell, cellIndex) => {
                     const td = document.createElement('td');
-                    if (index === theoryIndex) {
+                    if (cellIndex === theoryIndex) {
                         td.textContent = parseFloat(cell).toFixed(1); // Format to 1 decimal place
-                    } else if (index === barcodeIndex) {
-                        td.textContent = cell; // Do not truncate, allow wrapping
+                    } else if (cellIndex === barcodeIndex) {
+                        // Make sure the barcode cell is never empty to begin with
+                        td.textContent = cell || '';
                         td.classList.add('barcode-cell'); // Add class for wrapping
                     } else {
                         td.textContent = cell;
@@ -290,29 +295,31 @@
                 dataBody.appendChild(tr);
 
                 // Load saved input value if available - use original row index for localStorage key
-                const savedInputValue = localStorage.getItem(`inputValue_${originalRowIndex}`);
+                const savedInputValue = localStorage.getItem(`inputValue_${dataRowIndex}`);
                 if (savedInputValue) {
                     input.value = savedInputValue;
                 }
 
                 // Load saved barcode if available - use original row index for localStorage key
-                const savedBarcode = localStorage.getItem(`barcode_${originalRowIndex}`);
-                if (savedBarcode) {
+                const savedBarcode = localStorage.getItem(`barcode_${dataRowIndex}`);
+                if (savedBarcode && barcodeIndex >= 0) {
                     const barcodeCell = tr.getElementsByTagName('td')[barcodeIndex];
                     barcodeCell.textContent = savedBarcode;
-                    barcodeCell.classList.add('barcode-cell');
                 }
 
                 // Save input value on change - use original row index for localStorage key
                 // Capture the current displayRowIndex for this row
                 const currentDisplayIndex = displayRowIndex;
                 input.addEventListener('input', () => {
-                    localStorage.setItem(`inputValue_${originalRowIndex}`, input.value);
-                    checkBarcode(currentDisplayIndex, input.value, originalRowIndex);
+                    localStorage.setItem(`inputValue_${dataRowIndex}`, input.value);
+                    checkBarcode(currentDisplayIndex, input.value, dataRowIndex);
                 });
                 
                 displayRowIndex++; // Increment the displayed row counter
             });
+            
+            // For debugging - log the number of skipped rows
+            console.log(`Skipped ${skippedRows} rows containing "Totals:"`);
         }
 
         function searchTable() {
@@ -425,6 +432,7 @@
         }
 
         function saveTableData(data) {
+            // Save only the raw data from the file, not any user-entered values
             localStorage.setItem('tableData', JSON.stringify(data));
         }
 
@@ -435,17 +443,19 @@
             }
         }
 
-        // Update the checkBarcode function to work correctly with the new row indexing
+        // Update checkBarcode function to better handle barcode cells
         function checkBarcode(displayRowIndex, inputValue, originalRowIndex) {
             const rows = document.getElementById('dataBody').getElementsByTagName('tr');
+            
             // Make sure we have this row at the expected position
             if (displayRowIndex < rows.length) {
                 const row = rows[displayRowIndex];
                 const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
                 
-                if (inputValue !== '' && (!barcodeCell.textContent || barcodeCell.textContent.trim() === '')) {
+                // Check if input has a value and barcode is empty
+                if (inputValue && (!barcodeCell.textContent || barcodeCell.textContent.trim() === '')) {
                     promptForBarcode().then(barcode => {
-                        if (barcode !== null) {
+                        if (barcode !== null && barcode !== '') {
                             barcodeCell.textContent = barcode;
                             barcodeCell.classList.add('barcode-cell');
                             // Save the barcode locally using the original row index
