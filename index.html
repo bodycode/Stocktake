@@ -201,6 +201,8 @@
                 const inputTd = document.createElement('td');
                 const input = document.createElement('input');
                 input.type = 'number'; // Ensure numeric keyboard
+                input.style.width = '6ch'; // Display only 6 characters wide
+                input.maxLength = 10; // Allow up to 10 characters to be entered
                 input.step = '0.1'; // Allow decimal values
                 inputTd.appendChild(input);
                 tr.appendChild(inputTd);
