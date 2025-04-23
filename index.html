@@ -253,314 +253,319 @@
             th.textContent = 'Actual';
             headerRow.appendChild(th);
                     
-            // Create data rows
-        data.slice(1).forEach((row, rowIndex) => {
-            const tr = document.createElement('tr');
-            row.forEach((cell, index) => {
-                const td = document.createElement('td');
-                if (index === theoryIndex) {
-                    td.textContent = parseFloat(cell).toFixed(1); // Format to 1 decimal place
-                } else if (index === barcodeIndex) {
-                    td.textContent = cell; // Do not truncate, allow wrapping
-                    td.classList.add('barcode-cell'); // Add class for wrapping
-                } else {
-                    td.textContent = cell;
+            // Create data rows - filter out any "Totals:" rows
+            data.slice(1).forEach((row, rowIndex) => {
+                // Skip rows where the first cell is "Totals:"
+                if (row[0] && String(row[0]).toLowerCase().trim() === 'totals:') {
+                    return; // Skip this row
                 }
-                tr.appendChild(td);
-            });
+                
+                const tr = document.createElement('tr');
+                row.forEach((cell, index) => {
+                    const td = document.createElement('td');
+                    if (index === theoryIndex) {
+                        td.textContent = parseFloat(cell).toFixed(1); // Format to 1 decimal place
+                    } else if (index === barcodeIndex) {
+                        td.textContent = cell; // Do not truncate, allow wrapping
+                        td.classList.add('barcode-cell'); // Add class for wrapping
+                    } else {
+                        td.textContent = cell;
+                    }
+                    tr.appendChild(td);
+                });
 
-            const inputTd = document.createElement('td');
-            const input = document.createElement('input');
-            input.type = 'number'; // Changed from 'text' to 'number'
-            input.style.width = '6ch'; // Display only 6 characters wide
-            input.step = '0.1'; // Allow 0.1 step increments
-            input.min = '0'; // Minimum value of 0
-            inputTd.appendChild(input);
-            tr.appendChild(inputTd);
-            dataBody.appendChild(tr);
+                const inputTd = document.createElement('td');
+                const input = document.createElement('input');
+                input.type = 'number'; // Changed from 'text' to 'number'
+                input.style.width = '6ch'; // Display only 6 characters wide
+                input.step = '0.1'; // Allow 0.1 step increments
+                input.min = '0'; // Minimum value of 0
+                inputTd.appendChild(input);
+                tr.appendChild(inputTd);
+                dataBody.appendChild(tr);
 
-            // Load saved input value if available
-            const savedInputValue = localStorage.getItem(`inputValue_${rowIndex}`);
-            if (savedInputValue) {
-                input.value = savedInputValue;
-            }
-
-            // Load saved barcode if available
-            const savedBarcode = localStorage.getItem(`barcode_${rowIndex}`);
-            if (savedBarcode) {
-                const barcodeCell = tr.getElementsByTagName('td')[barcodeIndex];
-                barcodeCell.textContent = savedBarcode;
-                barcodeCell.classList.add('barcode-cell');
-            }
-
-            // Save input value on change
-            input.addEventListener('input', () => {
-                localStorage.setItem(`inputValue_${rowIndex}`, input.value);
-                checkBarcode(rowIndex, input.value);
-            });
-        });
-    }
-
-    function searchTable() {
-        const input = document.getElementById('searchInput');
-        const filter = input.value.toLowerCase();
-        const rows = document.getElementById('dataBody').getElementsByTagName('tr');
-        Array.from(rows).forEach(row => {
-            const cells = row.getElementsByTagName('td');
-            let match = false;
-            Array.from(cells).forEach(cell => {
-                if (cell.textContent.toLowerCase().indexOf(filter) > -1) {
-                    match = true;
+                // Load saved input value if available
+                const savedInputValue = localStorage.getItem(`inputValue_${rowIndex}`);
+                if (savedInputValue) {
+                    input.value = savedInputValue;
                 }
-            });
-            row.style.display = match ? '' : 'none';
-        });
-    }
 
-    function scanBarcode() {
-        document.getElementById('searchInput').value = '';
-        const codeReader = new ZXing.BrowserBarcodeReader();
-        codeReader.decodeOnceFromVideoDevice(undefined, 'video').then(result => {
-            document.getElementById('searchInput').value = result.text;
-            searchTable();
-        }).catch(err => console.error(err));
-    }
-
-    function downloadCSV() {
-        const rows = document.getElementById('dataBody').getElementsByTagName('tr');
-        const csvData = [];
-        Array.from(rows).forEach(row => {
-            const cells = row.getElementsByTagName('td');
-            const firstCell = cells[0] ? cells[0].textContent : '';
-            if (firstCell.toLowerCase() !== 'totals:') {
-                const barcodeCell = cells[1] ? cells[1].textContent : ''; // 'Barcode' is the second column
-                // Clean barcode text by removing any newlines, carriage returns, or line breaks
-                const cleanBarcode = barcodeCell.replace(/[\r\n\s]+/g, '');
-                const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
-                csvData.push([cleanBarcode, actualCell].join(','));
-            }
-        });
-        const csvContent = csvData.join('\n');
-        
-        // Check if device is mobile
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
-        if (isMobile) {
-            // Mobile approach: Open in new tab with option to share/copy
-            const blob = new Blob([csvContent], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            
-            // Create a modal dialog for mobile users
-            const modalOverlay = document.createElement('div');
-            modalOverlay.className = 'prompt-overlay';
-            const modalBox = document.createElement('div');
-            modalBox.className = 'prompt-box';
-            
-            const modalText = document.createElement('p');
-            modalText.textContent = 'Your export data is ready. Choose an option:';
-            modalBox.appendChild(modalText);
-            
-            const textArea = document.createElement('textarea');
-            textArea.value = csvContent;
-            textArea.style.width = '100%';
-            textArea.style.height = '150px';
-            textArea.readOnly = true;
-            modalBox.appendChild(textArea);
-            
-            // Copy to clipboard button
-            const copyButton = document.createElement('button');
-            copyButton.textContent = 'Copy to Clipboard';
-            copyButton.onclick = () => {
-                textArea.select();
-                document.execCommand('copy');
-                alert('Copied to clipboard!');
-            };
-            modalBox.appendChild(copyButton);
-            
-            // Open in new tab button
-            const openButton = document.createElement('button');
-            openButton.textContent = 'Open as Text';
-            openButton.onclick = () => {
-                window.open(url, '_blank');
-                document.body.removeChild(modalOverlay);
-            };
-            modalBox.appendChild(openButton);
-            
-            // Close button
-            const closeButton = document.createElement('button');
-            closeButton.textContent = 'Close';
-            closeButton.onclick = () => {
-                document.body.removeChild(modalOverlay);
-            };
-            modalBox.appendChild(closeButton);
-            
-            modalOverlay.appendChild(modalBox);
-            document.body.appendChild(modalOverlay);
-        } else {
-            // Desktop approach: Traditional download
-            const blob = new Blob([csvContent], { type: 'text/plain;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const downloadLink = document.getElementById('downloadLink');
-            downloadLink.setAttribute('href', url);
-            downloadLink.setAttribute('download', 'export.txt');
-            downloadLink.style.display = 'block';
-            downloadLink.click();
-            downloadLink.style.display = 'none';
-            URL.revokeObjectURL(url);
-        }
-    }
-
-    function saveTableData(data) {
-        localStorage.setItem('tableData', JSON.stringify(data));
-    }
-
-    function loadTableData() {
-        const tableData = JSON.parse(localStorage.getItem('tableData'));
-        if (tableData) {
-            populateTable(tableData);
-        }
-    }
-
-    function checkBarcode(rowIndex, inputValue) {
-        const rows = document.getElementById('dataBody').getElementsByTagName('tr');
-        const row = rows[rowIndex];
-        const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
-        if (inputValue !== '' && barcodeCell.textContent === '') {
-            promptForBarcode().then(barcode => {
-                if (barcode !== null) {
-                    barcodeCell.textContent = barcode;
+                // Load saved barcode if available
+                const savedBarcode = localStorage.getItem(`barcode_${rowIndex}`);
+                if (savedBarcode) {
+                    const barcodeCell = tr.getElementsByTagName('td')[barcodeIndex];
+                    barcodeCell.textContent = savedBarcode;
                     barcodeCell.classList.add('barcode-cell');
-                    // Save the barcode locally
-                    localStorage.setItem(`barcode_${rowIndex}`, barcode);
                 }
+
+                // Save input value on change
+                input.addEventListener('input', () => {
+                    localStorage.setItem(`inputValue_${rowIndex}`, input.value);
+                    checkBarcode(rowIndex, input.value);
+                });
             });
         }
-    }
 
-    function promptForBarcode() {
-        const promptOverlay = document.createElement('div');
-        promptOverlay.className = 'prompt-overlay';
-        const promptBox = document.createElement('div');
-        promptBox.className = 'prompt-box';
-        
-        const promptText = document.createElement('p');
-        promptText.textContent = 'This product does not have a barcode.\n\nPlease enter the barcode or scan it.';
-        promptBox.appendChild(promptText);
-        
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.placeholder = 'Enter barcode';
-        promptBox.appendChild(input);
-        
-        // Create video wrapper and video element
-        const videoWrapper = document.createElement('div');
-        videoWrapper.className = 'prompt-video-wrapper';
-        const video = document.createElement('video');
-        video.id = 'prompt-video';
-        videoWrapper.appendChild(video);
-        promptBox.appendChild(videoWrapper);
-        
-        // Scan button now toggles camera visibility
-        const scanButton = document.createElement('button');
-        scanButton.textContent = 'Scan Barcode';
-        scanButton.onclick = () => {
-            if (videoWrapper.style.display === 'block') {
-                // If video is showing, hide it and stop scanning
-                videoWrapper.style.display = 'none';
-                if (window.promptCodeReader) {
-                    window.promptCodeReader.reset();
-                    delete window.promptCodeReader;
+        function searchTable() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
+            Array.from(rows).forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                let match = false;
+                Array.from(cells).forEach(cell => {
+                    if (cell.textContent.toLowerCase().indexOf(filter) > -1) {
+                        match = true;
+                    }
+                });
+                row.style.display = match ? '' : 'none';
+            });
+        }
+
+        function scanBarcode() {
+            document.getElementById('searchInput').value = '';
+            const codeReader = new ZXing.BrowserBarcodeReader();
+            codeReader.decodeOnceFromVideoDevice(undefined, 'video').then(result => {
+                document.getElementById('searchInput').value = result.text;
+                searchTable();
+            }).catch(err => console.error(err));
+        }
+
+        function downloadCSV() {
+            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
+            const csvData = [];
+            Array.from(rows).forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                const firstCell = cells[0] ? cells[0].textContent : '';
+                if (firstCell.toLowerCase() !== 'totals:') {
+                    const barcodeCell = cells[1] ? cells[1].textContent : ''; // 'Barcode' is the second column
+                    // Clean barcode text by removing any newlines, carriage returns, or line breaks
+                    const cleanBarcode = barcodeCell.replace(/[\r\n\s]+/g, '');
+                    const actualCell = cells[cells.length - 1].getElementsByTagName('input')[0].value;
+                    csvData.push([cleanBarcode, actualCell].join(','));
                 }
-                scanButton.textContent = 'Scan Barcode';
+            });
+            const csvContent = csvData.join('\n');
+            
+            // Check if device is mobile
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Mobile approach: Open in new tab with option to share/copy
+                const blob = new Blob([csvContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                
+                // Create a modal dialog for mobile users
+                const modalOverlay = document.createElement('div');
+                modalOverlay.className = 'prompt-overlay';
+                const modalBox = document.createElement('div');
+                modalBox.className = 'prompt-box';
+                
+                const modalText = document.createElement('p');
+                modalText.textContent = 'Your export data is ready. Choose an option:';
+                modalBox.appendChild(modalText);
+                
+                const textArea = document.createElement('textarea');
+                textArea.value = csvContent;
+                textArea.style.width = '100%';
+                textArea.style.height = '150px';
+                textArea.readOnly = true;
+                modalBox.appendChild(textArea);
+                
+                // Copy to clipboard button
+                const copyButton = document.createElement('button');
+                copyButton.textContent = 'Copy to Clipboard';
+                copyButton.onclick = () => {
+                    textArea.select();
+                    document.execCommand('copy');
+                    alert('Copied to clipboard!');
+                };
+                modalBox.appendChild(copyButton);
+                
+                // Open in new tab button
+                const openButton = document.createElement('button');
+                openButton.textContent = 'Open as Text';
+                openButton.onclick = () => {
+                    window.open(url, '_blank');
+                    document.body.removeChild(modalOverlay);
+                };
+                modalBox.appendChild(openButton);
+                
+                // Close button
+                const closeButton = document.createElement('button');
+                closeButton.textContent = 'Close';
+                closeButton.onclick = () => {
+                    document.body.removeChild(modalOverlay);
+                };
+                modalBox.appendChild(closeButton);
+                
+                modalOverlay.appendChild(modalBox);
+                document.body.appendChild(modalOverlay);
             } else {
-                // If video is hidden, show it and start scanning
-                videoWrapper.style.display = 'block';
-                scanButton.textContent = 'Hide Camera';
-                scanBarcodeForPrompt(input, video);
+                // Desktop approach: Traditional download
+                const blob = new Blob([csvContent], { type: 'text/plain;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const downloadLink = document.getElementById('downloadLink');
+                downloadLink.setAttribute('href', url);
+                downloadLink.setAttribute('download', 'export.txt');
+                downloadLink.style.display = 'block';
+                downloadLink.click();
+                downloadLink.style.display = 'none';
+                URL.revokeObjectURL(url);
             }
-        };
-        promptBox.appendChild(scanButton);
-        
-        const submitButton = document.createElement('button');
-        submitButton.textContent = 'Submit';
-        submitButton.onclick = () => {
-            if (/^[a-zA-Z0-9]+$/.test(input.value)) {
+        }
+
+        function saveTableData(data) {
+            localStorage.setItem('tableData', JSON.stringify(data));
+        }
+
+        function loadTableData() {
+            const tableData = JSON.parse(localStorage.getItem('tableData'));
+            if (tableData) {
+                populateTable(tableData);
+            }
+        }
+
+        function checkBarcode(rowIndex, inputValue) {
+            const rows = document.getElementById('dataBody').getElementsByTagName('tr');
+            const row = rows[rowIndex];
+            const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
+            if (inputValue !== '' && barcodeCell.textContent === '') {
+                promptForBarcode().then(barcode => {
+                    if (barcode !== null) {
+                        barcodeCell.textContent = barcode;
+                        barcodeCell.classList.add('barcode-cell');
+                        // Save the barcode locally
+                        localStorage.setItem(`barcode_${rowIndex}`, barcode);
+                    }
+                });
+            }
+        }
+
+        function promptForBarcode() {
+            const promptOverlay = document.createElement('div');
+            promptOverlay.className = 'prompt-overlay';
+            const promptBox = document.createElement('div');
+            promptBox.className = 'prompt-box';
+            
+            const promptText = document.createElement('p');
+            promptText.textContent = 'This product does not have a barcode.\n\nPlease enter the barcode or scan it.';
+            promptBox.appendChild(promptText);
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Enter barcode';
+            promptBox.appendChild(input);
+            
+            // Create video wrapper and video element
+            const videoWrapper = document.createElement('div');
+            videoWrapper.className = 'prompt-video-wrapper';
+            const video = document.createElement('video');
+            video.id = 'prompt-video';
+            videoWrapper.appendChild(video);
+            promptBox.appendChild(videoWrapper);
+            
+            // Scan button now toggles camera visibility
+            const scanButton = document.createElement('button');
+            scanButton.textContent = 'Scan Barcode';
+            scanButton.onclick = () => {
+                if (videoWrapper.style.display === 'block') {
+                    // If video is showing, hide it and stop scanning
+                    videoWrapper.style.display = 'none';
+                    if (window.promptCodeReader) {
+                        window.promptCodeReader.reset();
+                        delete window.promptCodeReader;
+                    }
+                    scanButton.textContent = 'Scan Barcode';
+                } else {
+                    // If video is hidden, show it and start scanning
+                    videoWrapper.style.display = 'block';
+                    scanButton.textContent = 'Hide Camera';
+                    scanBarcodeForPrompt(input, video);
+                }
+            };
+            promptBox.appendChild(scanButton);
+            
+            const submitButton = document.createElement('button');
+            submitButton.textContent = 'Submit';
+            submitButton.onclick = () => {
+                if (/^[a-zA-Z0-9]+$/.test(input.value)) {
+                    // Stop any active scanning
+                    if (window.promptCodeReader) {
+                        window.promptCodeReader.reset();
+                        delete window.promptCodeReader;
+                    }
+                    document.body.removeChild(promptOverlay);
+                    resolvePrompt(input.value);
+                } else {
+                    alert('Invalid input. Please enter a valid alphanumeric Barcode.');
+                    input.style.borderColor = 'red'; // Highlight the input box in red
+                }
+            };
+            promptBox.appendChild(submitButton);
+            
+            const cancelButton = document.createElement('button');
+            cancelButton.textContent = 'Cancel';
+            cancelButton.onclick = () => {
                 // Stop any active scanning
                 if (window.promptCodeReader) {
                     window.promptCodeReader.reset();
                     delete window.promptCodeReader;
                 }
                 document.body.removeChild(promptOverlay);
-                resolvePrompt(input.value);
-            } else {
-                alert('Invalid input. Please enter a valid alphanumeric Barcode.');
-                input.style.borderColor = 'red'; // Highlight the input box in red
-            }
-        };
-        promptBox.appendChild(submitButton);
-        
-        const cancelButton = document.createElement('button');
-        cancelButton.textContent = 'Cancel';
-        cancelButton.onclick = () => {
-            // Stop any active scanning
-            if (window.promptCodeReader) {
-                window.promptCodeReader.reset();
-                delete window.promptCodeReader;
-            }
-            document.body.removeChild(promptOverlay);
-            resolvePrompt(null);
-        };
-        promptBox.appendChild(cancelButton);
-        
-        promptOverlay.appendChild(promptBox);
-        document.body.appendChild(promptOverlay);
-        
-        return new Promise((resolve) => {
-            window.resolvePrompt = resolve;
-        });
-    }
+                resolvePrompt(null);
+            };
+            promptBox.appendChild(cancelButton);
+            
+            promptOverlay.appendChild(promptBox);
+            document.body.appendChild(promptOverlay);
+            
+            return new Promise((resolve) => {
+                window.resolvePrompt = resolve;
+            });
+        }
 
-    function scanBarcodeForPrompt(input, videoElement) {
-        // Store the codeReader instance globally so we can reset it later
-        window.promptCodeReader = new ZXing.BrowserBarcodeReader();
-        window.promptCodeReader.decodeFromVideoDevice(undefined, videoElement, (result, error) => {
-            if (result) {
-                input.value = result.text;
-                // Hide the video after successful scan
-                const videoWrapper = videoElement.parentElement;
-                videoWrapper.style.display = 'none';
-                
-                // Change button text back
-                const buttons = videoWrapper.parentElement.getElementsByTagName('button');
-                for (let button of buttons) {
-                    if (button.textContent === 'Hide Camera') {
-                        button.textContent = 'Scan Barcode';
-                        break;
+        function scanBarcodeForPrompt(input, videoElement) {
+            // Store the codeReader instance globally so we can reset it later
+            window.promptCodeReader = new ZXing.BrowserBarcodeReader();
+            window.promptCodeReader.decodeFromVideoDevice(undefined, videoElement, (result, error) => {
+                if (result) {
+                    input.value = result.text;
+                    // Hide the video after successful scan
+                    const videoWrapper = videoElement.parentElement;
+                    videoWrapper.style.display = 'none';
+                    
+                    // Change button text back
+                    const buttons = videoWrapper.parentElement.getElementsByTagName('button');
+                    for (let button of buttons) {
+                        if (button.textContent === 'Hide Camera') {
+                            button.textContent = 'Scan Barcode';
+                            break;
+                        }
+                    }
+                    
+                    // Stop scanning
+                    if (window.promptCodeReader) {
+                        window.promptCodeReader.reset();
+                        delete window.promptCodeReader;
                     }
                 }
-                
-                // Stop scanning
-                if (window.promptCodeReader) {
-                    window.promptCodeReader.reset();
-                    delete window.promptCodeReader;
+                if (error && !(error instanceof ZXing.NotFoundException)) {
+                    console.error(error);
                 }
-            }
-            if (error && !(error instanceof ZXing.NotFoundException)) {
-                console.error(error);
-            }
-        }).catch(err => console.error(err));
-    }
-
-    function clearAllData() {
-        const confirmation = confirm('You are about to clear all data. \n\nDo you wish to continue?');
-        if (confirmation) {
-            localStorage.removeItem('tableData');
-            localStorage.clear();
-            document.getElementById('headerRow').innerHTML = '';
-            document.getElementById('dataBody').innerHTML = '';
-            alert('All data has been cleared.');
+            }).catch(err => console.error(err));
         }
-    }
-</script>
+
+        function clearAllData() {
+            const confirmation = confirm('You are about to clear all data. \n\nDo you wish to continue?');
+            if (confirmation) {
+                localStorage.removeItem('tableData');
+                localStorage.clear();
+                document.getElementById('headerRow').innerHTML = '';
+                document.getElementById('dataBody').innerHTML = '';
+                alert('All data has been cleared.');
+            }
+        }
+    </script>
 </body>
 </html>
