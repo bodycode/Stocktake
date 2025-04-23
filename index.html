@@ -141,6 +141,8 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             text-align: center;
             color: white;
+            max-width: 90%;
+            box-sizing: border-box;
         }
         .prompt-box input {
             width: 80%;
@@ -168,6 +170,19 @@
             white-space: pre-wrap; /* Allow text to wrap */
             overflow-wrap: break-word; /* Break long words */
             word-break: break-word; /* Ensure words break correctly */
+        }
+        .prompt-video-wrapper {
+            width: 100%;
+            max-width: 300px;
+            overflow: hidden;
+            clip-path: inset(33% 0 33% 0);
+            margin: 10px auto;
+            display: none; /* Hidden by default */
+        }
+        .prompt-video-wrapper video {
+            display: block;
+            width: 100%;
+            margin: -80px 0;
         }
     </style>
 </head>
@@ -427,23 +442,54 @@
         promptOverlay.className = 'prompt-overlay';
         const promptBox = document.createElement('div');
         promptBox.className = 'prompt-box';
+        
         const promptText = document.createElement('p');
         promptText.textContent = 'This product does not have a barcode.\n\nPlease enter the barcode or scan it.';
         promptBox.appendChild(promptText);
+        
         const input = document.createElement('input');
         input.type = 'text';
         input.placeholder = 'Enter barcode';
         promptBox.appendChild(input);
+        
+        // Create video wrapper and video element
+        const videoWrapper = document.createElement('div');
+        videoWrapper.className = 'prompt-video-wrapper';
+        const video = document.createElement('video');
+        video.id = 'prompt-video';
+        videoWrapper.appendChild(video);
+        promptBox.appendChild(videoWrapper);
+        
+        // Scan button now toggles camera visibility
         const scanButton = document.createElement('button');
         scanButton.textContent = 'Scan Barcode';
         scanButton.onclick = () => {
-            scanBarcodeForPrompt(input);
+            if (videoWrapper.style.display === 'block') {
+                // If video is showing, hide it and stop scanning
+                videoWrapper.style.display = 'none';
+                if (window.promptCodeReader) {
+                    window.promptCodeReader.reset();
+                    delete window.promptCodeReader;
+                }
+                scanButton.textContent = 'Scan Barcode';
+            } else {
+                // If video is hidden, show it and start scanning
+                videoWrapper.style.display = 'block';
+                scanButton.textContent = 'Hide Camera';
+                scanBarcodeForPrompt(input, video);
+            }
         };
         promptBox.appendChild(scanButton);
+        
         const submitButton = document.createElement('button');
         submitButton.textContent = 'Submit';
         submitButton.onclick = () => {
             if (/^[a-zA-Z0-9]+$/.test(input.value)) {
+                // Stop any active scanning
+                if (window.promptCodeReader) {
+                    window.promptCodeReader.reset();
+                    delete window.promptCodeReader;
+                }
                 document.body.removeChild(promptOverlay);
                 resolvePrompt(input.value);
             } else {
@@ -452,24 +498,56 @@
             }
         };
         promptBox.appendChild(submitButton);
+        
         const cancelButton = document.createElement('button');
         cancelButton.textContent = 'Cancel';
         cancelButton.onclick = () => {
+            // Stop any active scanning
+            if (window.promptCodeReader) {
+                window.promptCodeReader.reset();
+                delete window.promptCodeReader;
+            }
             document.body.removeChild(promptOverlay);
             resolvePrompt(null);
         };
         promptBox.appendChild(cancelButton);
+        
         promptOverlay.appendChild(promptBox);
         document.body.appendChild(promptOverlay);
+        
         return new Promise((resolve) => {
             window.resolvePrompt = resolve;
         });
     }
 
-    function scanBarcodeForPrompt(input) {
-        const codeReader = new ZXing.BrowserBarcodeReader();
-        codeReader.decodeOnceFromVideoDevice(undefined, 'video').then(result => {
-            input.value = result.text;
+    function scanBarcodeForPrompt(input, videoElement) {
+        // Store the codeReader instance globally so we can reset it later
+        window.promptCodeReader = new ZXing.BrowserBarcodeReader();
+        window.promptCodeReader.decodeFromVideoDevice(undefined, videoElement, (result, error) => {
+            if (result) {
+                input.value = result.text;
+                // Hide the video after successful scan
+                const videoWrapper = videoElement.parentElement;
+                videoWrapper.style.display = 'none';
+                
+                // Change button text back
+                const buttons = videoWrapper.parentElement.getElementsByTagName('button');
+                for (let button of buttons) {
+                    if (button.textContent === 'Hide Camera') {
+                        button.textContent = 'Scan Barcode';
+                        break;
+                    }
+                }
+                
+                // Stop scanning
+                if (window.promptCodeReader) {
+                    window.promptCodeReader.reset();
+                    delete window.promptCodeReader;
+                }
+            }
+            if (error && !(error instanceof ZXing.NotFoundException)) {
+                console.error(error);
+            }
         }).catch(err => console.error(err));
     }
 
