@@ -252,15 +252,20 @@
             const th = document.createElement('th');
             th.textContent = 'Actual';
             headerRow.appendChild(th);
-                    
+            
             // Create data rows - filter out any "Totals:" rows
-            data.slice(1).forEach((row, rowIndex) => {
+            let displayRowIndex = 0; // Track the actual displayed row index
+            
+            data.slice(1).forEach((row, originalRowIndex) => {
                 // Skip rows where the first cell is "Totals:"
                 if (row[0] && String(row[0]).toLowerCase().trim() === 'totals:') {
                     return; // Skip this row
                 }
                 
                 const tr = document.createElement('tr');
+                // Store the original data row index as a data attribute
+                tr.dataset.originalIndex = originalRowIndex;
+                
                 row.forEach((cell, index) => {
                     const td = document.createElement('td');
                     if (index === theoryIndex) {
@@ -284,25 +289,27 @@
                 tr.appendChild(inputTd);
                 dataBody.appendChild(tr);
 
-                // Load saved input value if available
-                const savedInputValue = localStorage.getItem(`inputValue_${rowIndex}`);
+                // Load saved input value if available - use original row index for localStorage key
+                const savedInputValue = localStorage.getItem(`inputValue_${originalRowIndex}`);
                 if (savedInputValue) {
                     input.value = savedInputValue;
                 }
 
-                // Load saved barcode if available
-                const savedBarcode = localStorage.getItem(`barcode_${rowIndex}`);
+                // Load saved barcode if available - use original row index for localStorage key
+                const savedBarcode = localStorage.getItem(`barcode_${originalRowIndex}`);
                 if (savedBarcode) {
                     const barcodeCell = tr.getElementsByTagName('td')[barcodeIndex];
                     barcodeCell.textContent = savedBarcode;
                     barcodeCell.classList.add('barcode-cell');
                 }
 
-                // Save input value on change
+                // Save input value on change - use original row index for localStorage key
                 input.addEventListener('input', () => {
-                    localStorage.setItem(`inputValue_${rowIndex}`, input.value);
-                    checkBarcode(rowIndex, input.value);
+                    localStorage.setItem(`inputValue_${originalRowIndex}`, input.value);
+                    checkBarcode(displayRowIndex, input.value, originalRowIndex);
                 });
+                
+                displayRowIndex++; // Increment the displayed row counter
             });
         }
 
@@ -426,7 +433,7 @@
             }
         }
 
-        function checkBarcode(rowIndex, inputValue) {
+        function checkBarcode(rowIndex, inputValue, originalRowIndex) {
             const rows = document.getElementById('dataBody').getElementsByTagName('tr');
             const row = rows[rowIndex];
             const barcodeCell = row.getElementsByTagName('td')[1]; // Assuming 'Barcode' is the second column
@@ -435,8 +442,8 @@
                     if (barcode !== null) {
                         barcodeCell.textContent = barcode;
                         barcodeCell.classList.add('barcode-cell');
-                        // Save the barcode locally
-                        localStorage.setItem(`barcode_${rowIndex}`, barcode);
+                        // Save the barcode locally using the original row index
+                        localStorage.setItem(`barcode_${originalRowIndex}`, barcode);
                     }
                 });
             }
