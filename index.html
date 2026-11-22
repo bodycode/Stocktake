@@ -293,15 +293,13 @@
                 console.warn("Barcode column not found in headers, defaulting to column 1");
             }
 
-            // NEW: Save detected barcode column index globally
-            BARCODE_COL_INDEX = barcodeIndex;
-            
             data.slice(1).forEach((row, originalRowIndex) => {
-    const firstTwoCellsBlank =
+    // Skip the second data row when the first two cells are blank
+    if (
+        originalRowIndex === 1 &&
         (!row[0] || String(row[0]).trim() === '') &&
-        (!row[1] || String(row[1]).trim() === '');
-
-    if (firstTwoCellsBlank) {
+        (!row[1] || String(row[1]).trim() === '')
+    ) {
         return;
     }
 
