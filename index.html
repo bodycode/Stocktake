@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
@@ -12,27 +13,30 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
 
+        html {
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Libre Baskerville', serif;
             margin: 0;
-            padding: 0;
+            padding: 0 0 30px 0;
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
+            align-items: center;
             min-height: 100vh;
             background-color: #1c1c1c;
             position: relative;
         }
 
+        /*
+         * The title already has a black background, so the separate
+         * top wrapper is no longer required for spacing.
+         */
         .top-wrapper {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 90px;
-            background-color: black;
-            z-index: 1;
+            display: none;
         }
 
         h1 {
@@ -42,9 +46,10 @@
             text-align: center;
             text-transform: uppercase;
             font-weight: 700;
-            margin-top: 0;
+            margin: 0;
+            padding: 20px 10px;
             font-size: 48px;
-            padding: 20px 10px 5px 10px;
+            line-height: 1.1;
             letter-spacing: 0.05em;
             width: 100%;
             box-sizing: border-box;
@@ -53,9 +58,10 @@
         }
 
         .button {
-            display: inline-block;
-            margin: 8px 0;
+            display: block;
+            margin: 8px auto;
             width: 80%;
+            max-width: 800px;
             padding: 10px 20px;
             font-size: 16px;
             color: white;
@@ -72,10 +78,26 @@
             color: #a89a68;
         }
 
+        .button:hover {
+            background-color: #a89a68;
+            color: #1c1c1c;
+        }
+
+        .button:hover::after {
+            color: #1c1c1c;
+        }
+
         .upload-btn-wrapper {
             width: 100%;
+            margin: 8px 0 0 0;
+            padding: 0;
             box-sizing: border-box;
-            margin-left: 20%;
+            text-align: center;
+        }
+
+        .upload-btn-wrapper .button {
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .upload-btn-wrapper input[type="file"] {
@@ -90,6 +112,10 @@
             padding: 10px;
             font-size: 16px;
             box-sizing: border-box;
+        }
+
+        #searchInput {
+            display: block;
         }
 
         table {
@@ -159,7 +185,10 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             text-align: center;
             color: white;
-            max-width: 90%;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
             box-sizing: border-box;
         }
 
@@ -209,9 +238,18 @@
             margin: -80px 0;
         }
 
+        /*
+         * Gives search results some space from the top of the screen
+         * when scrollIntoView is used.
+         */
+        #dataBody tr {
+            scroll-margin-top: 15px;
+        }
+
         @media (max-width: 600px) {
             h1 {
                 font-size: 34px;
+                padding: 18px 8px;
             }
 
             table {
@@ -226,12 +264,17 @@
             }
 
             .upload-btn-wrapper {
-                margin-left: 10%;
+                width: 100%;
+                margin: 8px 0 0 0;
             }
 
             th,
             td {
                 padding: 6px;
+            }
+
+            #dataBody tr {
+                scroll-margin-top: 10px;
             }
         }
     </style>
@@ -248,7 +291,7 @@
             class="button"
             onclick="document.getElementById('fileInput').click()"
         >
-            Upload Excel file
+            Upload Excel File
         </button>
 
         <input
@@ -276,7 +319,8 @@
         type="text"
         id="searchInput"
         placeholder="Search..."
-        onkeyup="searchTable()"
+        autocomplete="off"
+        oninput="searchTable()"
     >
 
     <table id="dataGrid">
@@ -306,8 +350,8 @@
         Clear All Data
     </button>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js">\</script>
+    <script src="https://unpkg.com/@zxing/library@latest">\</script>
 
     <script>
         /*
@@ -316,10 +360,20 @@
          */
         let BARCODE_COL_INDEX = 1;
 
-        document.addEventListener('DOMContentLoaded', function () {
-            loadTableData();
-            setTimeout(debugBarcodes, 1000);
-        });
+        /*
+         * Prevent repeated scrolling while the same search result
+         * remains selected.
+         */
+        let lastSearchResultIndex = -1;
+        let searchScrollTimer = null;
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            function () {
+                loadTableData();
+                setTimeout(debugBarcodes, 1000);
+            }
+        );
 
         function handleFile(event) {
             const file = event.target.files[0];
@@ -341,18 +395,41 @@
                     });
 
                     const firstSheet =
-                        workbook.Sheets[workbook.SheetNames[0]];
+                        workbook.Sheets[
+                            workbook.SheetNames[0]
+                        ];
 
-                    const jsonData = XLSX.utils.sheet_to_json(
-                        firstSheet,
-                        {
-                            header: 1,
-                            defval: ''
-                        }
-                    );
+                    const jsonData =
+                        XLSX.utils.sheet_to_json(
+                            firstSheet,
+                            {
+                                header: 1,
+                                defval: ''
+                            }
+                        );
 
                     populateTable(jsonData);
                     saveTableData(jsonData);
+
+                    document.getElementById(
+                        'searchInput'
+                    ).value = '';
+
+                    lastSearchResultIndex = -1;
+
+                    const table =
+                        document.getElementById(
+                            'dataGrid'
+                        );
+
+                    if (table) {
+                        setTimeout(function () {
+                            table.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }, 100);
+                    }
                 } catch (error) {
                     console.error(error);
 
@@ -369,48 +446,59 @@
         function debugBarcodes() {
             console.log('--- DEBUG BARCODES ---');
 
-            const barcodeKeys = Object.keys(localStorage).filter(
-                key => key.startsWith('barcode_')
-            );
+            const barcodeKeys =
+                Object.keys(localStorage).filter(
+                    key => key.startsWith('barcode_')
+                );
 
             console.log(
                 `Found ${barcodeKeys.length} saved barcodes in localStorage`
             );
 
             barcodeKeys.forEach(key => {
-                const value = localStorage.getItem(key);
+                const value =
+                    localStorage.getItem(key);
+
                 console.log(`${key}: ${value}`);
             });
 
-            const rows = document
-                .getElementById('dataBody')
-                .getElementsByTagName('tr');
+            const rows =
+                document
+                    .getElementById('dataBody')
+                    .getElementsByTagName('tr');
 
-            console.log(`Current table has ${rows.length} rows`);
+            console.log(
+                `Current table has ${rows.length} rows`
+            );
 
-            Array.from(rows).forEach((row, index) => {
-                const originalIndex = row.dataset.originalIndex;
+            Array.from(rows).forEach(
+                (row, index) => {
+                    const originalIndex =
+                        row.dataset.originalIndex;
 
-                const barcodeCell =
-                    row.getElementsByTagName('td')[
-                        BARCODE_COL_INDEX
-                    ];
+                    const barcodeCell =
+                        row.getElementsByTagName('td')[
+                            BARCODE_COL_INDEX
+                        ];
 
-                const barcodeText = barcodeCell
-                    ? barcodeCell.textContent
-                    : 'no cell';
+                    const barcodeText =
+                        barcodeCell
+                            ? barcodeCell.textContent
+                            : 'no cell';
 
-                const savedBarcode = localStorage.getItem(
-                    `barcode_${originalIndex}`
-                );
+                    const savedBarcode =
+                        localStorage.getItem(
+                            `barcode_${originalIndex}`
+                        );
 
-                console.log(
-                    `Row ${index} ` +
-                    `(original index: ${originalIndex}): ` +
-                    `displayed="${barcodeText}", ` +
-                    `saved="${savedBarcode}"`
-                );
-            });
+                    console.log(
+                        `Row ${index} ` +
+                        `(original index: ${originalIndex}): ` +
+                        `displayed="${barcodeText}", ` +
+                        `saved="${savedBarcode}"`
+                    );
+                }
+            );
         }
 
         function populateTable(data) {
@@ -423,60 +511,73 @@
             headerRow.innerHTML = '';
             dataBody.innerHTML = '';
 
-            if (!Array.isArray(data) || data.length === 0) {
+            if (
+                !Array.isArray(data) ||
+                data.length === 0
+            ) {
                 return;
             }
 
             let barcodeIndex = -1;
             let theoryIndex = -1;
 
-            const headings = Array.isArray(data[0])
-                ? data[0]
-                : [];
+            const headings =
+                Array.isArray(data[0])
+                    ? data[0]
+                    : [];
 
             /*
              * Create headings using Excel row 1.
              */
-            headings.forEach((header, index) => {
-                const th = document.createElement('th');
+            headings.forEach(
+                (header, index) => {
+                    const th =
+                        document.createElement('th');
 
-                th.textContent =
-                    header !== undefined && header !== null
-                        ? header
-                        : '';
+                    th.textContent =
+                        header !== undefined &&
+                        header !== null
+                            ? header
+                            : '';
 
-                const cleanHeader = String(
-                    header !== undefined && header !== null
-                        ? header
-                        : ''
-                )
-                    .toLowerCase()
-                    .trim();
+                    const cleanHeader =
+                        String(
+                            header !== undefined &&
+                            header !== null
+                                ? header
+                                : ''
+                        )
+                            .toLowerCase()
+                            .trim();
 
-                if (cleanHeader === 'barcode') {
-                    barcodeIndex = index;
+                    if (cleanHeader === 'barcode') {
+                        barcodeIndex = index;
 
-                    console.log(
-                        `Found barcode column at index ${barcodeIndex}`
-                    );
+                        console.log(
+                            `Found barcode column at index ${barcodeIndex}`
+                        );
+                    }
+
+                    if (cleanHeader === 'theory') {
+                        theoryIndex = index;
+                    }
+
+                    headerRow.appendChild(th);
                 }
-
-                if (cleanHeader === 'theory') {
-                    theoryIndex = index;
-                }
-
-                headerRow.appendChild(th);
-            });
+            );
 
             /*
              * Add the Actual heading.
              */
-            const actualHeader = document.createElement('th');
+            const actualHeader =
+                document.createElement('th');
+
             actualHeader.textContent = 'Actual';
             headerRow.appendChild(actualHeader);
 
             /*
-             * Default Barcode to column B if its heading was not found.
+             * Default Barcode to column B if the heading
+             * cannot be found.
              */
             if (barcodeIndex === -1) {
                 barcodeIndex = 1;
@@ -492,19 +593,13 @@
             let displayRowIndex = 0;
 
             /*
-             * data.slice(1) removes Excel row 1 because it contains
-             * the headings.
-             *
-             * The first row remaining is Excel row 2.
-             * Therefore originalRowIndex 0 is Excel row 2.
+             * data.slice(1) removes Excel row 1.
+             * originalRowIndex 0 is therefore Excel row 2.
              */
             data.slice(1).forEach(
                 (row, originalRowIndex) => {
                     /*
-                     * REMOVE EXCEL ROW 2.
-                     *
-                     * This removes the unwanted row containing the total
-                     * such as 1,665.1721. Products begin from Excel row 3.
+                     * Remove Excel row 2.
                      */
                     if (originalRowIndex === 0) {
                         return;
@@ -514,18 +609,15 @@
                         return;
                     }
 
-                    const tr = document.createElement('tr');
+                    const tr =
+                        document.createElement('tr');
 
-                    /*
-                     * Preserve the existing index scheme so saved counts
-                     * and manually entered barcodes continue to work.
-                     */
                     tr.dataset.originalIndex =
                         originalRowIndex;
 
                     /*
-                     * Always create the same number of cells as there are
-                     * headings. This keeps Actual in the correct column.
+                     * Always create the same number of cells
+                     * as there are headings.
                      */
                     for (
                         let cellIndex = 0;
@@ -533,7 +625,9 @@
                         cellIndex++
                     ) {
                         const cell = row[cellIndex];
-                        const td = document.createElement('td');
+
+                        const td =
+                            document.createElement('td');
 
                         if (
                             cellIndex === theoryIndex &&
@@ -543,7 +637,9 @@
                                 parseFloat(cell);
 
                             td.textContent =
-                                Number.isFinite(theoryValue)
+                                Number.isFinite(
+                                    theoryValue
+                                )
                                     ? theoryValue.toFixed(1)
                                     : '';
                         } else {
@@ -554,7 +650,9 @@
                                     : '';
                         }
 
-                        if (cellIndex === barcodeIndex) {
+                        if (
+                            cellIndex === barcodeIndex
+                        ) {
                             td.classList.add(
                                 'barcode-cell'
                             );
@@ -576,6 +674,7 @@
                     input.style.width = '6ch';
                     input.step = '0.1';
                     input.min = '0';
+                    input.inputMode = 'decimal';
 
                     inputTd.appendChild(input);
                     tr.appendChild(inputTd);
@@ -587,8 +686,8 @@
                         ];
 
                     /*
-                     * Restore a previously saved count.
-                     * Checking against null means zero is restored too.
+                     * Restore the previously saved count.
+                     * A saved value of zero is also restored.
                      */
                     const savedInputValue =
                         localStorage.getItem(
@@ -596,18 +695,22 @@
                         );
 
                     if (savedInputValue !== null) {
-                        input.value = savedInputValue;
+                        input.value =
+                            savedInputValue;
                     }
 
                     /*
-                     * Restore a previously entered barcode.
+                     * Restore a manually entered barcode.
                      */
                     const savedBarcode =
                         localStorage.getItem(
                             `barcode_${originalRowIndex}`
                         );
 
-                    if (savedBarcode && barcodeCell) {
+                    if (
+                        savedBarcode &&
+                        barcodeCell
+                    ) {
                         barcodeCell.textContent =
                             savedBarcode;
                     }
@@ -624,13 +727,15 @@
                             );
 
                             /*
-                             * If a product has a count but no barcode,
-                             * ask for the barcode.
+                             * If a counted item has no barcode,
+                             * request one.
                              */
                             if (
                                 input.value !== '' &&
                                 barcodeCell &&
-                                barcodeCell.textContent.trim() === ''
+                                barcodeCell
+                                    .textContent
+                                    .trim() === ''
                             ) {
                                 promptForBarcode().then(
                                     barcode => {
@@ -661,38 +766,133 @@
 
         function searchTable() {
             const searchInput =
-                document.getElementById('searchInput');
+                document.getElementById(
+                    'searchInput'
+                );
 
             const filter =
-                searchInput.value.toLowerCase().trim();
+                searchInput.value
+                    .toLowerCase()
+                    .trim();
 
-            const rows = document
-                .getElementById('dataBody')
-                .getElementsByTagName('tr');
+            const rows =
+                document
+                    .getElementById('dataBody')
+                    .getElementsByTagName('tr');
 
-            Array.from(rows).forEach(row => {
-                const cells =
-                    row.getElementsByTagName('td');
+            let firstVisibleRow = null;
+            let firstVisibleIndex = -1;
 
-                let match = false;
+            Array.from(rows).forEach(
+                (row, rowIndex) => {
+                    const cells =
+                        row.getElementsByTagName('td');
 
-                Array.from(cells).forEach(cell => {
-                    const cellText = String(
-                        cell.textContent || ''
-                    ).toLowerCase();
+                    let match = false;
 
-                    if (cellText.includes(filter)) {
+                    /*
+                     * If the search is empty, show every row.
+                     */
+                    if (filter === '') {
                         match = true;
-                    }
-                });
+                    } else {
+                        Array.from(cells).forEach(
+                            cell => {
+                                const cellText =
+                                    String(
+                                        cell.textContent ||
+                                        ''
+                                    ).toLowerCase();
 
-                row.style.display = match ? '' : 'none';
-            });
+                                if (
+                                    cellText.includes(
+                                        filter
+                                    )
+                                ) {
+                                    match = true;
+                                }
+                            }
+                        );
+                    }
+
+                    row.style.display =
+                        match ? '' : 'none';
+
+                    if (
+                        filter !== '' &&
+                        match &&
+                        !firstVisibleRow
+                    ) {
+                        firstVisibleRow = row;
+                        firstVisibleIndex = rowIndex;
+                    }
+                }
+            );
+
+            /*
+             * Cancel any previous pending scroll.
+             */
+            if (searchScrollTimer) {
+                clearTimeout(
+                    searchScrollTimer
+                );
+            }
+
+            /*
+             * Scroll to the first matching product.
+             * Waiting briefly gives Safari time to hide
+             * the non-matching table rows first.
+             */
+            if (
+                filter.length >= 2 &&
+                firstVisibleRow
+            ) {
+                searchScrollTimer =
+                    setTimeout(function () {
+                        /*
+                         * Only scroll again if the first result
+                         * has changed, or if the row is not visible.
+                         */
+                        const rowRect =
+                            firstVisibleRow
+                                .getBoundingClientRect();
+
+                        const viewportHeight =
+                            window.innerHeight ||
+                            document.documentElement
+                                .clientHeight;
+
+                        const rowIsVisible =
+                            rowRect.top >= 0 &&
+                            rowRect.bottom <=
+                                viewportHeight;
+
+                        if (
+                            firstVisibleIndex !==
+                                lastSearchResultIndex ||
+                            !rowIsVisible
+                        ) {
+                            firstVisibleRow
+                                .scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'center',
+                                    inline: 'nearest'
+                                });
+
+                            lastSearchResultIndex =
+                                firstVisibleIndex;
+                        }
+                    }, 120);
+            } else {
+                lastSearchResultIndex = -1;
+            }
         }
 
         function scanBarcode() {
             const searchInput =
-                document.getElementById('searchInput');
+                document.getElementById(
+                    'searchInput'
+                );
 
             searchInput.value = '';
 
@@ -705,7 +905,13 @@
                     'video'
                 )
                 .then(result => {
-                    searchInput.value = result.text;
+                    searchInput.value =
+                        result.text;
+
+                    /*
+                     * searchTable also scrolls to the
+                     * scanned matching product.
+                     */
                     searchTable();
                 })
                 .catch(error => {
@@ -714,16 +920,15 @@
         }
 
         /*
-         * Export only rows that have:
-         * 1. A count entered, including zero.
+         * Export only rows with:
+         * 1. An entered count, including zero.
          * 2. A barcode.
-         *
-         * Rows without counts are not exported.
          */
         function downloadCSV() {
-            const rows = document
-                .getElementById('dataBody')
-                .getElementsByTagName('tr');
+            const rows =
+                document
+                    .getElementById('dataBody')
+                    .getElementsByTagName('tr');
 
             const exportData = [];
 
@@ -731,7 +936,10 @@
                 const cells =
                     row.getElementsByTagName('td');
 
-                if (!cells || cells.length === 0) {
+                if (
+                    !cells ||
+                    cells.length === 0
+                ) {
                     return;
                 }
 
@@ -739,15 +947,20 @@
                     cells[cells.length - 1];
 
                 const input =
-                    actualCell.querySelector('input');
+                    actualCell.querySelector(
+                        'input'
+                    );
 
-                const count = input
-                    ? String(input.value).trim()
-                    : '';
+                const count =
+                    input
+                        ? String(
+                            input.value
+                        ).trim()
+                        : '';
 
                 /*
-                 * Skip products that have no entered count.
-                 * The value "0" is accepted as a count.
+                 * Blank counts are skipped.
+                 * Zero is an accepted count.
                  */
                 if (count === '') {
                     return;
@@ -756,16 +969,18 @@
                 const barcodeCell =
                     cells[BARCODE_COL_INDEX];
 
-                const barcode = barcodeCell
-                    ? String(barcodeCell.textContent)
-                        .replace(/[\r\n\s]+/g, '')
-                        .trim()
-                    : '';
+                const barcode =
+                    barcodeCell
+                        ? String(
+                            barcodeCell.textContent
+                        )
+                            .replace(
+                                /[\r\n\s]+/g,
+                                ''
+                            )
+                            .trim()
+                        : '';
 
-                /*
-                 * Skip counted products with no barcode.
-                 * Normally the barcode-entry prompt prevents this.
-                 */
                 if (barcode === '') {
                     return;
                 }
@@ -789,7 +1004,8 @@
             const blob = new Blob(
                 [fileContent],
                 {
-                    type: 'text/plain;charset=utf-8;'
+                    type:
+                        'text/plain;charset=utf-8;'
                 }
             );
 
@@ -797,11 +1013,13 @@
                 URL.createObjectURL(blob);
 
             const downloadLink =
-                document.getElementById('downloadLink');
+                document.getElementById(
+                    'downloadLink'
+                );
 
             downloadLink.href = url;
-            downloadLink.download = 'export.txt';
-            downloadLink.style.display = 'none';
+            downloadLink.download =
+                'export.txt';
 
             downloadLink.click();
 
@@ -819,7 +1037,9 @@
 
         function loadTableData() {
             const storedData =
-                localStorage.getItem('tableData');
+                localStorage.getItem(
+                    'tableData'
+                );
 
             if (!storedData) {
                 return;
@@ -836,7 +1056,9 @@
                     error
                 );
 
-                localStorage.removeItem('tableData');
+                localStorage.removeItem(
+                    'tableData'
+                );
             }
         }
 
@@ -861,13 +1083,16 @@
                     'This product does not have a barcode.\n\n' +
                     'Please enter the barcode or scan it.';
 
-                promptBox.appendChild(promptText);
+                promptBox.appendChild(
+                    promptText
+                );
 
                 const input =
                     document.createElement('input');
 
                 input.type = 'text';
-                input.placeholder = 'Enter barcode';
+                input.placeholder =
+                    'Enter barcode';
 
                 promptBox.appendChild(input);
 
@@ -883,31 +1108,45 @@
                 video.id = 'prompt-video';
 
                 videoWrapper.appendChild(video);
-                promptBox.appendChild(videoWrapper);
+                promptBox.appendChild(
+                    videoWrapper
+                );
 
-                const stopPromptScanner = function () {
-                    if (window.promptCodeReader) {
-                        window.promptCodeReader.reset();
-                        delete window.promptCodeReader;
-                    }
-                };
+                const stopPromptScanner =
+                    function () {
+                        if (
+                            window.promptCodeReader
+                        ) {
+                            window.promptCodeReader
+                                .reset();
 
-                const closePrompt = function (value) {
-                    stopPromptScanner();
+                            delete window
+                                .promptCodeReader;
+                        }
+                    };
 
-                    if (
-                        promptOverlay.parentElement
-                    ) {
-                        promptOverlay.parentElement.removeChild(
+                const closePrompt =
+                    function (value) {
+                        stopPromptScanner();
+
+                        if (
                             promptOverlay
-                        );
-                    }
+                                .parentElement
+                        ) {
+                            promptOverlay
+                                .parentElement
+                                .removeChild(
+                                    promptOverlay
+                                );
+                        }
 
-                    resolve(value);
-                };
+                        resolve(value);
+                    };
 
                 const scanButton =
-                    document.createElement('button');
+                    document.createElement(
+                        'button'
+                    );
 
                 scanButton.type = 'button';
                 scanButton.textContent =
@@ -917,19 +1156,21 @@
                     'click',
                     function () {
                         if (
-                            videoWrapper.style.display ===
+                            videoWrapper
+                                .style
+                                .display ===
                             'block'
                         ) {
-                            videoWrapper.style.display =
-                                'none';
+                            videoWrapper.style
+                                .display = 'none';
 
                             stopPromptScanner();
 
                             scanButton.textContent =
                                 'Scan Barcode';
                         } else {
-                            videoWrapper.style.display =
-                                'block';
+                            videoWrapper.style
+                                .display = 'block';
 
                             scanButton.textContent =
                                 'Hide Camera';
@@ -944,13 +1185,18 @@
                     }
                 );
 
-                promptBox.appendChild(scanButton);
+                promptBox.appendChild(
+                    scanButton
+                );
 
                 const submitButton =
-                    document.createElement('button');
+                    document.createElement(
+                        'button'
+                    );
 
                 submitButton.type = 'button';
-                submitButton.textContent = 'Submit';
+                submitButton.textContent =
+                    'Submit';
 
                 submitButton.addEventListener(
                     'click',
@@ -969,7 +1215,8 @@
                                 'Invalid input. Please enter a valid alphanumeric barcode.'
                             );
 
-                            input.style.borderColor =
+                            input.style
+                                .borderColor =
                                 'red';
 
                             input.focus();
@@ -977,13 +1224,18 @@
                     }
                 );
 
-                promptBox.appendChild(submitButton);
+                promptBox.appendChild(
+                    submitButton
+                );
 
                 const cancelButton =
-                    document.createElement('button');
+                    document.createElement(
+                        'button'
+                    );
 
                 cancelButton.type = 'button';
-                cancelButton.textContent = 'Cancel';
+                cancelButton.textContent =
+                    'Cancel';
 
                 cancelButton.addEventListener(
                     'click',
@@ -992,10 +1244,17 @@
                     }
                 );
 
-                promptBox.appendChild(cancelButton);
+                promptBox.appendChild(
+                    cancelButton
+                );
 
-                promptOverlay.appendChild(promptBox);
-                document.body.appendChild(promptOverlay);
+                promptOverlay.appendChild(
+                    promptBox
+                );
+
+                document.body.appendChild(
+                    promptOverlay
+                );
 
                 input.focus();
             });
@@ -1018,22 +1277,31 @@
                 .decodeFromVideoDevice(
                     undefined,
                     videoElement,
-                    function (result, error) {
+                    function (
+                        result,
+                        error
+                    ) {
                         if (result) {
-                            input.value = result.text;
+                            input.value =
+                                result.text;
 
-                            videoWrapper.style.display =
+                            videoWrapper.style
+                                .display =
                                 'none';
 
                             scanButton.textContent =
                                 'Scan Barcode';
 
                             if (
-                                window.promptCodeReader
+                                window
+                                    .promptCodeReader
                             ) {
-                                window.promptCodeReader.reset();
+                                window
+                                    .promptCodeReader
+                                    .reset();
 
-                                delete window.promptCodeReader;
+                                delete window
+                                    .promptCodeReader;
                             }
                         }
 
@@ -1060,18 +1328,16 @@
         }
 
         function clearAllData() {
-            const confirmation = confirm(
-                'You are about to clear all data.\n\n' +
-                'Do you wish to continue?'
-            );
+            const confirmation =
+                confirm(
+                    'You are about to clear all data.\n\n' +
+                    'Do you wish to continue?'
+                );
 
             if (!confirmation) {
                 return;
             }
 
-            /*
-             * Clear the spreadsheet, saved counts and added barcodes.
-             */
             localStorage.clear();
 
             document.getElementById(
@@ -1090,7 +1356,17 @@
                 'fileInput'
             ).value = '';
 
-            alert('All data has been cleared.');
+            lastSearchResultIndex = -1;
+
+            alert(
+                'All data has been cleared.'
+            );
+
+            window.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: 'smooth'
+            });
         }
     </script>
 </body>
