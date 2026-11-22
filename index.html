@@ -294,14 +294,18 @@
             }
 
             data.slice(1).forEach((row, originalRowIndex) => {
-    // Skip the second data row when the first two cells are blank
+    // Create data rows - skip the blank second row
+let displayRowIndex = 0;
+
+data.slice(1).forEach((row, originalRowIndex) => {
+    // Skip only the second row (index 1), when both leading cells are blank
     if (
         originalRowIndex === 1 &&
         (!row[0] || String(row[0]).trim() === '') &&
         (!row[1] || String(row[1]).trim() === '')
     ) {
         return;
-    }
+    })
 
                 const tr = document.createElement('tr');
                 // Store the original data row index as a data attribute
