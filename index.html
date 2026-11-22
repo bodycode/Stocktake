@@ -297,15 +297,17 @@
             BARCODE_COL_INDEX = barcodeIndex;
             
             // Create data rows - filter out any "Totals:" rows
-            let displayRowIndex = 0;
-            
             data.slice(1).forEach((row, originalRowIndex) => {
-    const firstCellBlank = !row[0] || String(row[0]).trim() === '';
-    const secondCellBlank = !row[1] || String(row[1]).trim() === '';
+    const firstTwoCellsBlank =
+        (!row[0] || String(row[0]).trim() === '') &&
+        (!row[1] || String(row[1]).trim() === '');
 
-    if (firstCellBlank && secondCellBlank) {
+    if (firstTwoCellsBlank) {
         return;
     }
+
+    // Existing row creation logic
+    // ...
 });
                 
                 const tr = document.createElement('tr');
