@@ -615,39 +615,89 @@
                     /*
                      * Save the count whenever it changes.
                      */
-                    input.addEventListener(
-                        'input',
-                        function () {
-                            localStorage.setItem(
-                                `inputValue_${originalRowIndex}`,
-                                input.value
-                            );
+                    /*
+ * Remember the current position when the count field is selected.
+ */
+let savedScrollPosition = 0;
 
-                            /*
-                             * If a product has a count but no barcode,
-                             * ask for the barcode.
-                             */
-                            if (
-                                input.value !== '' &&
-                                barcodeCell &&
-                                barcodeCell.textContent.trim() === ''
-                            ) {
-                                promptForBarcode().then(
-                                    barcode => {
-                                        if (barcode) {
-                                            barcodeCell.textContent =
-                                                barcode;
+input.addEventListener('focus', function () {
+    savedScrollPosition = window.scrollY;
+});
 
-                                            localStorage.setItem(
-                                                `barcode_${originalRowIndex}`,
-                                                barcode
-                                            );
-                                        }
-                                    }
-                                );
-                            }
-                        }
-                    );
+/*
+ * Save the count without allowing the page to jump back to the top.
+ */
+input.addEventListener('input', function () {
+    const currentScrollPosition = window.scrollY;
+
+    localStorage.setItem(
+        `inputValue_${originalRowIndex}`,
+        input.value
+    );
+
+    /*
+     * Restore the position after the browser processes the input.
+     */
+    requestAnimationFrame(function () {
+        window.scrollTo({
+            top: currentScrollPosition,
+            left: 0,
+            behavior: 'auto'
+        });
+    });
+
+    /*
+     * If the counted product has no barcode, display the
+     * barcode prompt and then return to the same table position.
+     */
+    if (
+        input.value !== '' &&
+        barcodeCell &&
+        barcodeCell.textContent.trim() === ''
+    ) {
+        const positionBeforePrompt = window.scrollY;
+
+        promptForBarcode().then(function (barcode) {
+            if (barcode) {
+                barcodeCell.textContent = barcode;
+
+                localStorage.setItem(
+                    `barcode_${originalRowIndex}`,
+                    barcode
+                );
+            }
+
+            requestAnimationFrame(function () {
+                window.scrollTo({
+                    top: positionBeforePrompt,
+                    left: 0,
+                    behavior: 'auto'
+                });
+
+                /*
+                 * Return focus to the same count field.
+                 */
+                input.focus({
+                    preventScroll: true
+                });
+            });
+        });
+    }
+});
+
+/*
+ * Also preserve the position when the field loses focus,
+ * including when Enter, Tab or the phone keyboard is used.
+ */
+input.addEventListener('change', function () {
+    requestAnimationFrame(function () {
+        window.scrollTo({
+            top: savedScrollPosition,
+            left: 0,
+            behavior: 'auto'
+        });
+    });
+});
 
                     displayRowIndex++;
                 }
