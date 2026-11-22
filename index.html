@@ -296,16 +296,17 @@
             // NEW: Save detected barcode column index globally
             BARCODE_COL_INDEX = barcodeIndex;
             
-            // Create data rows - filter out any "Totals:" rows
+                        // Create data rows
             let displayRowIndex = 0;
             
             data.slice(1).forEach((row, originalRowIndex) => {
-                // Skip rows where the first cell is "Totals:"
-                if (row[0] && String(row[0]).toLowerCase().trim() === 'totals:') {
-                    return; // Skip this row
+                // Skip spreadsheet row 2 (the first row after the header)
+                if (originalRowIndex === 0) {
+                    return;
                 }
                 
                 const tr = document.createElement('tr');
+`
                 // Store the original data row index as a data attribute
                 tr.dataset.originalIndex = originalRowIndex;
                 
