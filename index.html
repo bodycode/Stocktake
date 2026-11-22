@@ -300,10 +300,15 @@
             let displayRowIndex = 0;
             
             data.slice(1).forEach((row, originalRowIndex) => {
-                // Skip rows where the first cell is "Totals:"
-                if (row[0] && String(row[0]).toLowerCase().trim() === 'totals:') {
-                    return; // Skip this row
-                }
+    const firstCellBlank = !row[0] || String(row[0]).trim() === '';
+    const secondCellBlank = !row[1] || String(row[1]).trim() === '';
+
+    if (firstCellBlank && secondCellBlank) {
+        return;
+    }
+
+    // Existing row creation logic...
+});
                 
                 const tr = document.createElement('tr');
                 // Store the original data row index as a data attribute
